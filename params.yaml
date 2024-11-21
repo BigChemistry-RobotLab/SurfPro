@@ -13,7 +13,7 @@ data:
   scale: true
 model:
   name: AttentiveFP-64d
-  n_epochs: 50
+  n_epochs: 500
   seed: 42
   n_batch: 64
   hidden_channels: 64
@@ -23,7 +23,7 @@ model:
   dropout: 0.1
   featurize: graph
 host:
-  masterdir: /home/stefan/phd/SurfactantProperties
+  masterdir: /home/stefan/phd/SurfPro
   workdir: .
   device:
   - 0

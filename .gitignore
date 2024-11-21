@@ -5,6 +5,7 @@
 .bash_history
 .python_history
 out
+outputs
 final
 
 .lr_find*

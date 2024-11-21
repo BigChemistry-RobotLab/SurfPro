@@ -7,17 +7,16 @@ In addition to the database, this repository contains all code to reproduce the 
 **Please cite our work if you wish to use any of the data sets**.
 
 ## SurfPro Database 
-The SurfPro database is provided in three files. `surfpro_literature.csv` is the source file with all 1624 unique surfactant structures (SMILES), their curated experimental properties from literature, as well as the reference / DOI for each property / structure.
-We further provide the `surfpro_train.csv` and `surfpro_test.csv` files ready for model training. 
-surfpro_test contains a total of 140 surfactant structures, with 140 pCMC measurements, as well as all 6 properties for a subset of 70 structures.
-These were obtained through stratified sampling by `surfactant type` from the full database (see Methods in the Paper for more details).
-
-We also provide `surfpro_imputed.csv` file with imputed values from the multi-property ensemble predictions & uncertainties.
+The SurfPro database is provided in four csv files. `surfpro_literature.csv` is the source file with all 1624 unique surfactant structures (SMILES), their curated experimental properties from literature, as well as the reference / DOI for each property / structure.
+We split this database into a train and test set with stratification by surfactant type to obtain `surfpro_train.csv` and `surfpro_test.csv` (see Methods in the Paper or [scripts/test_split.py](scripts/test_split.py) for more details). 
+`surfpro_test` contains a total of 140 surfactant structures, with 140 pCMC measurements, as well as all 6 properties for a subset of 70 structures.
+`surfpro_train` contains all other 1484 structures and properties, but for many structures only a subset of their properties are available.
+We used the trained models to impute these missing propreties, which we also provide in the `surfpro_imputed.csv` file, with imputed predictions and uncertainties the multi-property ensemble.
 ```
-data/surfpro_literature.csv
-data/surfpro_train.csv
-data/surfpro_test.csv
-data/surfpro_imputed.csv
+data/surfpro_literature.csv         raw dataset with references (1624 structures, incomplete properties)
+data/surfpro_train.csv              csv ready for training training & validation (1484 structures)
+data/surfpro_test.csv               stratified test set for evaluation (140 structures)
+data/surfpro_imputed.csv            imputed database (1624 structures with predictions for all missing properties) 
 ```
 
 ## Properties

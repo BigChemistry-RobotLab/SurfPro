@@ -1,0 +1,4 @@
+[hydra]
+    enabled = True
+[core]
+    autostage = False
