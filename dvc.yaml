@@ -1,0 +1,103 @@
+params:
+ - params.yaml
+
+stages:
+  split_data:
+    cmd: 
+      - pwd
+      - export PYTHONPATH=${host.masterdir}:$PYTHONPATH
+      - echo $PYTHONPATH
+      - echo "SPLIT DATA ${data.task}"
+      - mkdir -p data/${data.task}/
+      - python3 src/dataloader.py
+    params:
+      - host
+      - data
+    deps:
+      - src/dataloader.py
+      - data/surfpro_train.csv
+      - data/surfpro_test.csv
+    outs:
+      - data/${data.task}/df_raw.csv
+      - data/${data.task}/surfpro.pkl
+
+  train:
+    cmd: 
+      - rm -fR out/${data.task}
+      - mkdir -p out/${data.task}/models
+      - echo "TRAIN ${data.task}"
+      - python3 scripts/train_model.py 
+    params:
+      - data
+      - model
+      - host
+    deps:
+      - data/${data.task}/surfpro.pkl
+      - src/model.py
+      - scripts/train_model.py
+    outs:
+      - out/${data.task}/models/:
+          persist: true
+      - out/${data.task}/metrics.json
+      - out/${data.task}/test_preds_folds.csv
+
+  predict:
+    cmd: 
+      - echo "PREDICT ${data.task}"
+      - python3 scripts/fill_table.py 
+    params:
+      - data
+      - model
+      - host
+    deps:
+      - src/model.py
+      - out/${data.task}/models
+      - scripts/fill_table.py 
+      - data/${data.task}/surfpro.pkl
+      - data/${data.task}/df_raw.csv
+    outs:
+      - out/${data.task}/df_ensemble_preds.csv
+      - out/${data.task}/filled_table_merged.csv
+
+  evaluate:
+    cmd: 
+      - echo "EVALUATE ${data.task}"
+      - python3 scripts/evaluate_model.py 
+    params:
+      - data
+      - model
+      - host
+    deps:
+      - src/model.py
+      - scripts/evaluate_model.py
+      - data/${data.task}/df_raw.csv
+      - out/${data.task}/df_ensemble_preds.csv
+      - out/${data.task}/test_preds_folds.csv
+    outs:
+      - out/${data.task}/results_test_metrics.json
+      - out/${data.task}/eval_metrics.json
+      - out/${data.task}/eval_metrics.csv
+
+  plot:
+    cmd: 
+      - echo "PLOTTING ${data.task}"
+      - mkdir -p out/${data.task}/plots/parity
+      - python3 scripts/plot_predictions.py 
+      - mkdir -p ${host.masterdir}/results/${data.task}/
+      - mkdir -p ${host.masterdir}/results/plots/
+      - cp params.yaml out/${data.task}/params.yaml
+      - cp -r out/${data.task}/
+        ${host.masterdir}/results/${data.task}/${model.name}-${data.task}/
+    params:
+      - host
+      - data
+      - model
+    deps:
+      - scripts/plot_predictions.py
+      - data/${data.task}/df_raw.csv
+      - out/${data.task}/df_ensemble_preds.csv
+    outs:
+      - out/${data.task}/plots/:
+          persist: true
+
+  # - python3 scripts/plot_test_errors.py

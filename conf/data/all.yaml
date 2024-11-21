@@ -1,0 +1,6 @@
+task: all
+props: ['pCMC', 'AW_ST_CMC', 'Gamma_max', 'Area_min', 'Pi_CMC', 'PC20']
+units: ['', 'mN/m', 'mol/m^2 * 1e6', 'nm^2', 'mN/m', '']
+data_seed: 42
+n_splits: 10
+scale: true

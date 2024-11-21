@@ -1,0 +1,6 @@
+task: awst
+props: ['AW_ST_CMC']
+units: ["mN/m"]
+data_seed: 42
+n_splits: 10
+scale: false

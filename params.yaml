@@ -1,0 +1,29 @@
+data:
+  task: multi
+  props:
+  - pCMC
+  - AW_ST_CMC
+  - Gamma_max
+  units:
+  - ''
+  - mN/m
+  - mol/m^2 * 1e6
+  data_seed: 42
+  n_splits: 10
+  scale: true
+model:
+  name: AttentiveFP-64d
+  n_epochs: 50
+  seed: 42
+  n_batch: 64
+  hidden_channels: 64
+  out_channels: 128
+  num_layers: 2
+  num_timesteps: 2
+  dropout: 0.1
+  featurize: graph
+host:
+  masterdir: /home/stefan/phd/SurfactantProperties
+  workdir: .
+  device:
+  - 0

@@ -1,0 +1,4 @@
+defaults:
+  - data: [all, multi, cmc, awst, gamma, pc20]
+  - model: [attfp-32d, attfp-64d, attfp-96d] 
+  - host: [local, queue]

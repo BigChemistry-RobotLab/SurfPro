@@ -1,0 +1,6 @@
+task: cmc
+props: ['pCMC']
+units: [""]
+data_seed: 42
+n_splits: 10
+scale: false
