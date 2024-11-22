@@ -11,7 +11,9 @@ The SurfPro database is provided in four csv files. `surfpro_literature.csv` is 
 We split this database into a train and test set with stratification by surfactant type to obtain `surfpro_train.csv` and `surfpro_test.csv` (see Methods in the Paper or [scripts/test_split.py](scripts/test_split.py) for more details). 
 `surfpro_test` contains a total of 140 surfactant structures, with 140 pCMC measurements, as well as all 6 properties for a subset of 70 structures.
 `surfpro_train` contains all other 1484 structures and properties, but for many structures only a subset of their properties are available.
-We used the trained models to impute these missing propreties, which we also provide in the `surfpro_imputed.csv` file, with imputed predictions and uncertainties the multi-property ensemble.
+We used the trained models to impute these missing propreties for all 977 structures with incomplete properties, which we provide in the `surfpro_imputed.csv` file.
+In this file, all missing property values are imputed with predictions and uncertainties from the multi-property ensemble.
+
 ```
 data/surfpro_literature.csv         raw dataset with references (1624 structures, incomplete properties)
 data/surfpro_train.csv              csv ready for training training & validation (1484 structures)
@@ -40,9 +42,9 @@ $C_{20} = 10^{-\mathrm{pC_{20}}}$.
 
 
 ## The Langmuir isotherm
-<img src="figs/langmuir_isotherm.png" alt="Langmuir Isotherm" width="100%">
+<img src="figs/langmuir_isotherm.png" alt="Langmuir Isotherm" width="90%">
 
-Schematic visualization of the Langmuir isotherm based on the Szyszkowski equation and derived properties. 
+Schematic visualization of the Langmuir isotherm using the Szyszkowski equation and derived properties. 
 Surfactant molecules adsorb to the air-water interface and lower the surface tension. 
 With increasing surfactant concentration (x-axis, log scale) the surface tension $\gamma$ (y-axis) decreases until the interface is saturated and $\gamma$ stops decreasing further. 
 Beyond this critical point, surfactants self-assemble into micelles.
@@ -52,23 +54,27 @@ $\Gamma_{max}$ characterizes the slope at the steepest descent of the isoterm (s
 The area of the surfactant at the air-water interface $A_{min}$ and the surface pressure at CMC $\pi_{CMC}$ can also be determined from the isotherm (not visualized).
 
 ## Dataloader
-We provide a standalone dataloader in [src/dataloader.py](src/dataloader.py), which transforms [surfpro_train.csv](surfpro_train.csv) and [surfpro_test.csv](surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [src.dataloader.SurfProDB](src.dataloader.SurfProDB) and [src.dataloader.DataSplit](src.dataloader.DataSplit)). 
+We provide a dataloader in [src/dataloader.py](src/dataloader.py), which transforms [surfpro_train.csv](surfpro_train.csv) and [surfpro_test.csv](surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [src.dataloader.SurfProDB](src.dataloader.SurfProDB) and [src.dataloader.DataSplit](src.dataloader.DataSplit)). 
+The graph neural network (AttentiveFP) training script ([scripts/train_model.py](scripts/train_model.py)) uses this dataloader as part of the DVC pipeline.
+The [scripts/make_baselines.py](scripts/make_baselines.py) script uses the dataloader directly as input features for established ML models (RandomForest and Ridge) using ECFP or RDKit fingerprints.
 
-The [scripts/make_baselines.py](scripts/make_baselines.py) script uses the dataloader with established ML models (RandomForest and Ridge) using ECFP or RDKit fingerprints as input features.
+## Featurizers
+We used an established featurization approach to obtain molecular representations suitable as input for any graph neural network in [src.featurizer.py](src.featurizer.py).
+We adapted the AttentiveFP implementation [Github](https://github.com/OpenDrugAI/AttentiveFP/blob/master/code/AttentiveFP/) code to interface with `pytorch-geometric.Data` and `pytorch-geometric.nn.models.AttentiveFP` [docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.AttentiveFP.html).
+We used the RDKit 200-bit fingerprint (`'featurize = rdkit'`), as well as Morgan fingerprints `'featurize = ecfp'` for our baselines.
+[src.dataloader.SurfProDB](src.dataloader.SurfProDB) accepts the argument `'featurize = ..'` to load and featurize them.
 
-The graph neural network (AttentiveFP) training script ([scripts/train_model.py](scripts/train_model.py)) leverages the same dataloader as part of the DVC pipeline.
 
 ## Tasks
-It also demonstrates the different **tasks** defined: 
+We explored the following **tasks**.
 - single-property pCMC [[task='cmc']](conf/data/cmc.yaml)
 - single-property AW_ST_CMC [[task='awst']](conf/data/awst.yaml)
 - single-property Gamma_max [[task='gamma']](conf/data/gamma.yaml)
 - single-property pC20 [[task='pc20']](conf/data/pc20.yaml)
 - multi-property [[task='multi']](conf/data/multi.yaml)
 - all-property [[task='all']](conf/data/all.yaml)
+The [src.dataloader.SurfProDB](src.dataloader.SurfProDB) accepts the argument `'task = ..'` to load and featurize them.
 
-## Imputed database
-Using the trained all-property ensemble model, we *imputed* all missing values for all 977 incomplete surfactants, and provide the predictions (mean) and their uncertainties (standard deviation) in `data/surfpro_imputed.csv`. 
 
 # Reproducing results of the paper 
 ### Conda setup 
@@ -103,12 +109,12 @@ dvc exp run --queue -S 'data=all,multi,cmc,awst,gamma,pc20' -S 'model=attfp-32d,
 # or directly override: [...] -S host.masterdir="/path/to/your/SurfPro"'
 ```
 
-### reproduce all baselines experiments
+### reproduce all baselines experiments (RDKit | ECFP x Ridge | RF for 4 single-property tasks)
 ```
 python scripts/make_baselines.py
 ```
 
-### run a single AttentiveFP experiment, possibly overriding specific configuration
+### run a single AttentiveFP experiment, overriding specific configuration
 ```
 dvc exp run -S 'data=cmc' -S 'model=attfp-32d' -S 'model.n_epochs=100' -S 'data.n_splits=2'
 ```
