@@ -59,7 +59,7 @@ The graph neural network (AttentiveFP) training script ([scripts/train_model.py]
 The [scripts/make_baselines.py](scripts/make_baselines.py) script uses the dataloader directly as input features for established ML models (RandomForest and Ridge) using ECFP or RDKit fingerprints.
 
 ## Featurizers
-We used an established featurization approach to obtain molecular representations suitable as input for any graph neural network in [src.featurizer.py](src.featurizer.py).
+We used an established featurization approach to obtain molecular representations suitable as input for any graph neural network in [src/featurizer.py](src/featurizer.py).
 We adapted the AttentiveFP implementation [Github](https://github.com/OpenDrugAI/AttentiveFP/blob/master/code/AttentiveFP/) code to interface with `pytorch-geometric.Data` and `pytorch-geometric.nn.models.AttentiveFP` [docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.AttentiveFP.html).
 We used the RDKit 200-bit fingerprint (`'featurize = rdkit'`), as well as Morgan fingerprints `'featurize = ecfp'` for our baselines.
 [src.dataloader.SurfProDB](src.dataloader.SurfProDB) accepts the argument `'featurize = ..'` to load and featurize them.
@@ -67,13 +67,13 @@ We used the RDKit 200-bit fingerprint (`'featurize = rdkit'`), as well as Morgan
 
 ## Tasks
 We explored the following **tasks**.
+The [src.dataloader.SurfProDB](src.dataloader.SurfProDB) accepts the argument `'task = ..'` to load and featurize them.
 - single-property pCMC [[task='cmc']](conf/data/cmc.yaml)
 - single-property AW_ST_CMC [[task='awst']](conf/data/awst.yaml)
 - single-property Gamma_max [[task='gamma']](conf/data/gamma.yaml)
 - single-property pC20 [[task='pc20']](conf/data/pc20.yaml)
 - multi-property [[task='multi']](conf/data/multi.yaml)
 - all-property [[task='all']](conf/data/all.yaml)
-The [src.dataloader.SurfProDB](src.dataloader.SurfProDB) accepts the argument `'task = ..'` to load and featurize them.
 
 
 # Reproducing results of the paper 

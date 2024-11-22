@@ -238,7 +238,7 @@ class RDKitGraphFeaturizer:
 
         return np.array(adjacency_list, dtype=int).transpose(), edge_features
 
-    def featurize_smiles(self, smi: str, temp=None):
+    def featurize_smiles(self, smi: str):
         graph = graph_from_smiles(smi)
         node_features = graph.feature_array("atom")
         edge_features = graph.feature_array("bond")
@@ -250,16 +250,10 @@ class RDKitGraphFeaturizer:
             x=torch.tensor(node_features, dtype=torch.float),
             edge_index=torch.tensor(adjacency_list, dtype=torch.long),
             edge_attr=torch.tensor(edge_features, dtype=torch.float),
-            y=torch.tensor(temp, dtype=torch.float) if temp else None,
         )
 
-    def __call__(self, smiles: List[str], temps: List[float] = None):
-        if temps is not None:
-            return [
-                self.featurize_smiles(smi, t) for smi, t in list(zip(smiles, temps))
-            ]
-        else:
-            return [self.featurize_smiles(smi) for smi in smiles]
+    def __call__(self, smiles: List[str]):
+        return [self.featurize_smiles(smi) for smi in smiles]
 
 
 if __name__ == "__main__":

@@ -19,7 +19,6 @@ class DataSplit(Dataset):
         smiles: List[str],
         labels: List[float],
         types: List[str],
-        temps: List[float] = None,
         propnames: List[str] = None,
         featurize: str = "graph",  # ['graph', 'rdkit', 'efcp']
     ):
@@ -28,14 +27,13 @@ class DataSplit(Dataset):
         masks = np.where(np.isnan(np.array(labels)), 0, 1)
         self.masks = torch.tensor(masks, dtype=torch.int8)
         self.types = types
-        # self.temps = temps
         self.propnames = propnames
         self.featurize = featurize
 
         if self.featurize == "graph":
             featurizer = RDKitGraphFeaturizer(
                 bidirectional=True, self_loop=True)
-            self.feats = featurizer(smiles, temps)
+            self.feats = featurizer(smiles)
 
         elif self.featurize == "rdkit":
             self.feats = [AllChem.RDKFingerprint(
@@ -59,20 +57,17 @@ class DataSplit(Dataset):
         labels = self.labels[idx]
         masks = self.masks[idx]
         types = self.types[idx]
-        # temps = self.temps[idx]
         return {
             "feats": feats,
             "labels": labels,
             "masks": masks,
             "smiles": smiles,
             "types": types,
-            # "temps": temps,
         }
 
     def collate(self, batch):
         smiles = [m.get("smiles") for m in batch]
         types = [m.get("types") for m in batch]
-        # temps = [m.get("temps") for m in batch]
 
         feats = [m.get("feats") for m in batch]
         if self.featurize == "graph":
@@ -108,7 +103,6 @@ class SurfProDB(Dataset):
         featurize="graph",
         n_folds=10,
         scaled=None,  # only scales in multi-property tasks
-        # add_temp=False,
     ):
         self.task = task
         self.workdir = workdir
@@ -118,7 +112,6 @@ class SurfProDB(Dataset):
             self.scaled = scaled
         else:
             self.scaled = True if task in ["all", "multi"] else False
-        # self.add_temp = add_temp
 
         train = pd.read_csv(f"{workdir}/data/surfpro_train.csv")
         test = pd.read_csv(f"{workdir}/data/surfpro_test.csv")
@@ -187,8 +180,6 @@ class SurfProDB(Dataset):
 
         self.propnames = propnames
         cols = ["SMILES", "type"] + propnames
-        # if self.add_temp:
-        #     cols += "temp"
 
         return df.loc[:, cols].reset_index(drop=True)
 
@@ -197,7 +188,6 @@ class SurfProDB(Dataset):
             smiles=df.SMILES,
             labels=df.loc[:, self.propnames].to_numpy(),
             types=df.type,
-            # temps=df.temp,
             propnames=self.propnames,
             featurize=self.featurize,
         )
