@@ -50,8 +50,8 @@ def plot_test_errors(cfg: DictConfig) -> None:
     cfg = OmegaConf.load("./params.yaml")
     print(OmegaConf.to_yaml(cfg))
 
-    # dataroot = f"{cfg.host.workdir}/data/{cfg.data.task}"
-    root = f"{cfg.host.workdir}/final/{cfg.data.task}"
+    # dataroot = f"{cfg.host.workdir}/data/{cfg.task.name}"
+    root = f"{cfg.host.workdir}/results/{cfg.task.name}"
 
     # Load data from JSON files
     properties = ['pCMC', 'AW_ST_CMC', 'Gamma_max', 'PC20']
@@ -75,7 +75,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
     ensemble_rmse = {prop: [] for prop in properties}
     avg_rmse = {prop: [] for prop in properties}
 
-    froot = f'{cfg.host.masterdir}/final'
+    froot = f'{cfg.host.masterdir}/results'
     abbrev_map = {
         'pCMC': 'cmc',
         'AW_ST_CMC': 'awst',
@@ -100,7 +100,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
             abbrev = abbrev_map[prop]
             with open(f'{froot}/{abbrev}/{model}-{abbrev}/test_result_final.json', 'r') as file:
                 metrics = json.load(file)
-                for i in range(cfg.data.n_splits):
+                for i in range(cfg.task.n_splits):
                     fold_mae = metrics[prop][f'raw_mae_fold{i}']
                     raw_mae.append([prop, model, fold_mae])
 
@@ -135,7 +135,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
                     ensemble_rmse[prop].append(np.nan)
                     avg_rmse[prop].append(np.nan)
                     continue
-                for i in range(cfg.data.n_splits):
+                for i in range(cfg.task.n_splits):
                     fold_mae = metrics[prop][f'raw_mae_fold{i}']
                     raw_mae.append([prop, model, fold_mae])
                     fold_rmse = metrics[prop][f'raw_rmse_fold{i}']
@@ -160,7 +160,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
             abbrev = abbrev_map[prop]
             with open(f'{froot}/{abbrev}/{model}/test_result_final.json', 'r') as file:
                 metrics = json.load(file)
-                for i in range(cfg.data.n_splits):
+                for i in range(cfg.task.n_splits):
                     fold_mae = metrics[prop][f'raw_mae_fold{i}']
                     raw_mae.append([prop, model, fold_mae])
                     fold_rmse = metrics[prop][f'raw_rmse_fold{i}']

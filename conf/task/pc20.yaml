@@ -1,4 +1,4 @@
-task: pc20
+name: pc20
 props: ['PC20']
 units: [""]
 data_seed: 42

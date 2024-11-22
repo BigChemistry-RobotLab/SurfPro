@@ -30,8 +30,8 @@ def train(cfg: DictConfig) -> None:
 
     pl.seed_everything(cfg.model.seed)
 
-    workdir = f"{cfg.host.workdir}/out/{cfg.data.task}"
-    with open(f"{cfg.host.workdir}/data/{cfg.data.task}/surfpro.pkl", "rb") as f:
+    workdir = f"{cfg.host.workdir}/out/{cfg.task.name}"
+    with open(f"{cfg.host.workdir}/data/{cfg.task.name}/surfpro.pkl", "rb") as f:
         surfpro = pickle.load(f)
     test_df = surfpro.test_df
 
@@ -43,7 +43,7 @@ def train(cfg: DictConfig) -> None:
     test_loader = surfpro.test.loader(shuffle=False, num_workers=2)
 
     metrics = {}
-    for fold in range(cfg.data.n_splits):
+    for fold in range(cfg.task.n_splits):
         train_loader = surfpro.train[fold].loader(shuffle=True, num_workers=16)
         valid_loader = surfpro.valid[fold].loader(shuffle=False, num_workers=2)
 
@@ -75,7 +75,7 @@ def train(cfg: DictConfig) -> None:
             accelerator="gpu" if torch.cuda.is_available() else "cpu",
             devices=cfg.host.device if torch.cuda.is_available() else "auto",
             logger=wandb_logger if torch.cuda.is_available() else None,
-            precision=32 if cfg.data.scale else "bf16-mixed",
+            precision=32 if cfg.task.scale else "bf16-mixed",
             default_root_dir=f"{workdir}/models/",
             callbacks=[lr_find, early_stop],
         )
@@ -93,7 +93,7 @@ def train(cfg: DictConfig) -> None:
                           for batch in preds]).float().numpy()
 
         # unscale preds (in multi-property / all-property setting)
-        if cfg.data.scale and surfpro.scaled:
+        if cfg.task.scale and surfpro.scaled:
             preds = surfpro.unscale(preds)
             print("preds rescaled to original units")
 

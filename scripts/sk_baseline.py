@@ -21,10 +21,10 @@ def calc_metrics(preds, labels):
 
 
 def train_sklearn(task, feat, modelname):
-    cfg = OmegaConf.load("./params.yaml")
+    # cfg = OmegaConf.load("./params.yaml")
 
-    workdir = cfg.host.masterdir
-    n_splits = 10  # cfg.data.n_splits
+    workdir = "."  # cfg.host.masterdir
+    n_splits = 10  # cfg.task.n_splits
 
     surfpro = SurfProDB(
         task=task, workdir=workdir, featurize=feat, n_folds=n_splits, scaled=False

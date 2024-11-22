@@ -1,4 +1,4 @@
-task: multi
+name: multi
 props: ['pCMC', 'AW_ST_CMC', 'Gamma_max']
 units: ['', 'mN/m', 'mol/m^2 * 1e6']
 data_seed: 42

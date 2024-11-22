@@ -7,8 +7,6 @@ from omegaconf import OmegaConf, DictConfig
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-import seaborn as sns
-
 
 @hydra.main(version_base="1.3", config_path="../conf", config_name="config")
 def plot_model_size(cfg: DictConfig) -> None:

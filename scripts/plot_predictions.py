@@ -16,23 +16,23 @@ def plot_predictions(cfg: DictConfig) -> None:
     cfg = OmegaConf.load("./params.yaml")
     print(OmegaConf.to_yaml(cfg))
 
-    dataroot = f"{cfg.host.workdir}/data/{cfg.data.task}"
-    root = f"{cfg.host.workdir}/out/{cfg.data.task}"
+    dataroot = f"{cfg.host.workdir}/data/{cfg.task.name}"
+    root = f"{cfg.host.workdir}/out/{cfg.task.name}"
 
     # load data and calculate errors
     df_raw = pd.read_csv(f"{dataroot}/df_raw.csv")
     print(df_raw)
     df_preds = pd.read_csv(f"{root}/df_ensemble_preds.csv")
 
-    labels = np.array(df_raw[cfg.data.props])
+    labels = np.array(df_raw[cfg.task.props])
     masks = np.where(np.isnan(np.array(labels)), 0, 1)
     # labels = np.nan_to_num(labels, nan=0.0)
 
-    preds = np.array(df_preds[cfg.data.props])
+    preds = np.array(df_preds[cfg.task.props])
     preds = preds * masks
 
-    props = cfg.data.props
-    units = cfg.data.units
+    props = cfg.task.props
+    units = cfg.task.units
 
     types = df_preds.loc[:, "types"]
     print("Surfacant Type", types)
@@ -45,20 +45,20 @@ def plot_predictions(cfg: DictConfig) -> None:
     assert len(props) == len(units) == labels.shape[1] == preds.shape[1]
 
     def plot_parity(labels, preds, types, suffix):
-        if cfg.data.task == "all":
+        if cfg.task.name == "all":
             fig, axes = plt.subplots(2, 3, figsize=(20, 10))
             axes = axes.flatten()
             fontsize = 10
-        elif cfg.data.task in ["multi"]:
+        elif cfg.task.name in ["multi"]:
             fig, axes = plt.subplots(1, 3, figsize=(18, 6))
             axes = axes.flatten()
             fontsize = 13
-        elif cfg.data.task in ["cmc", "awst", "pc20", "gamma"]:
+        elif cfg.task.name in ["cmc", "awst", "pc20", "gamma"]:
             fig, ax = plt.subplots(figsize=(8, 8))
             fontsize = 13
 
         for ix, _pname in enumerate(props):
-            if cfg.data.task in ["all", "multi"]:
+            if cfg.task.name in ["all", "multi"]:
                 ax = axes[ix]
             name = props[ix]
             unit = units[ix]

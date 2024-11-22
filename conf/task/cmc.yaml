@@ -1,4 +1,4 @@
-task: cmc
+name: cmc
 props: ['pCMC']
 units: [""]
 data_seed: 42

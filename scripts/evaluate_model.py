@@ -25,15 +25,15 @@ def evaluate(cfg: DictConfig) -> None:
     cfg = OmegaConf.load("./params.yaml")
     print(OmegaConf.to_yaml(cfg))
 
-    dataroot = f"{cfg.host.workdir}/data/{cfg.data.task}"
-    root = f"{cfg.host.workdir}/out/{cfg.data.task}"
+    dataroot = f"{cfg.host.workdir}/data/{cfg.task.name}"
+    root = f"{cfg.host.workdir}/out/{cfg.task.name}"
 
-    with open(f"{cfg.host.workdir}/data/{cfg.data.task}/surfpro.pkl", "rb") as f:
+    with open(f"{cfg.host.workdir}/data/{cfg.task.name}/surfpro.pkl", "rb") as f:
         surfpro = pickle.load(f)
 
     df_test = pd.read_csv(f"{root}/test_preds_folds.csv")
     for prop in surfpro.propnames:
-        for fold in range(cfg.data.n_splits):
+        for fold in range(cfg.task.n_splits):
             assert f"{prop}_fold{fold}" in list(df_test.columns)
 
     results_dict = {}
@@ -45,12 +45,12 @@ def evaluate(cfg: DictConfig) -> None:
         metrics = np.array(
             [
                 calc_metrics(labels, df_test.loc[:, f"{prop}_fold{fold}"])
-                for fold in range(cfg.data.n_splits)
+                for fold in range(cfg.task.n_splits)
             ]
         )
         print("metrics", metrics.shape)
-        assert len(metrics) == cfg.data.n_splits
-        assert len(metrics[:, 0]) == cfg.data.n_splits
+        assert len(metrics) == cfg.task.n_splits
+        assert len(metrics[:, 0]) == cfg.task.n_splits
         results_dict[prop]["avg_mae"] = np.mean(metrics[:, 0])
         results_dict[prop]["std_mae"] = np.std(metrics[:, 0])
         results_dict[prop]["avg_rmse"] = np.mean(metrics[:, 1])
@@ -62,14 +62,14 @@ def evaluate(cfg: DictConfig) -> None:
         # ENSEMBLE
         ensemble_preds = np.mean(
             [df_test.loc[:, f"{prop}_fold{fold}"]
-                for fold in range(cfg.data.n_splits)],
+                for fold in range(cfg.task.n_splits)],
             axis=0,
         )
         ensemble_std_avg = np.mean(
             np.std(
                 [
                     df_test.loc[:, f"{prop}_fold{fold}"]
-                    for fold in range(cfg.data.n_splits)
+                    for fold in range(cfg.task.n_splits)
                 ],
                 axis=0,
             )
@@ -84,7 +84,7 @@ def evaluate(cfg: DictConfig) -> None:
         results_dict[prop]["ensemble_std_avg"] = ensemble_std_avg
 
         # RAW per-fold
-        for fold in range(cfg.data.n_splits):
+        for fold in range(cfg.task.n_splits):
             mae, rmse, r2 = calc_metrics(
                 labels, df_test.loc[:, f"{prop}_fold{fold}"])
             results_dict[prop][f"raw_mae_fold{fold}"] = mae
@@ -93,7 +93,7 @@ def evaluate(cfg: DictConfig) -> None:
 
     # TODO put them into a DF, export to latex table,
     # pd.DataFrame(eval_data).to_csv(f"{root}/test_metrics.csv")
-    results_dict["data"] = OmegaConf.to_container(cfg.data)
+    results_dict["data"] = OmegaConf.to_container(cfg.task)
     results_dict["model"] = OmegaConf.to_container(cfg.model)
     print(results_dict)
     with open(f"{root}/results_test_metrics.json", "w") as f:

@@ -1,4 +1,4 @@
-task: awst
+name: awst
 props: ['AW_ST_CMC']
 units: ["mN/m"]
 data_seed: 42

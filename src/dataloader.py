@@ -213,21 +213,21 @@ if __name__ == "__main__":
     cfg = OmegaConf.load("./params.yaml")
 
     surfpro = SurfProDB(
-        task=cfg.data.task,
+        task=cfg.task.name,
         workdir=cfg.host.workdir,
         featurize=cfg.model.featurize,
-        n_folds=cfg.data.n_splits,
-        scaled=cfg.data.scale,
+        n_folds=cfg.task.n_splits,
+        scaled=cfg.task.scale,
     )
 
-    with open(f"{cfg.host.workdir}/data/{cfg.data.task}/surfpro.pkl", "wb") as f:
+    with open(f"{cfg.host.workdir}/data/{cfg.task.name}/surfpro.pkl", "wb") as f:
         pickle.dump(surfpro, f)
 
     raw_df = pd.concat([surfpro.train_df, surfpro.test_df])
     df_raw = raw_df.sort_values(by="SMILES").reset_index(drop=True)
-    df_raw.to_csv(f"{cfg.host.workdir}/data/{cfg.data.task}/df_raw.csv")
+    df_raw.to_csv(f"{cfg.host.workdir}/data/{cfg.task.name}/df_raw.csv")
 
-    # with open(f"{cfg.host.workdir}/data/{cfg.data.task}/surfpro.pkl", "rb") as f:
+    # with open(f"{cfg.host.workdir}/data/{cfg.task.name}/surfpro.pkl", "rb") as f:
     #     surfpro = pickle.load(f)
     #
     # print(surfpro.train[0].smiles[:12])

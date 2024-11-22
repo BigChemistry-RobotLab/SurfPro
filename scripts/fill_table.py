@@ -30,7 +30,7 @@ def fill_table(cfg: DictConfig) -> None:
     cfg = OmegaConf.load("./params.yaml")
     print(OmegaConf.to_yaml(cfg))
 
-    with open(f"{cfg.host.workdir}/data/{cfg.data.task}/surfpro.pkl", "rb") as f:
+    with open(f"{cfg.host.workdir}/data/{cfg.task.name}/surfpro.pkl", "rb") as f:
         surfpro = pickle.load(f)
 
     ######################
@@ -56,22 +56,22 @@ def fill_table(cfg: DictConfig) -> None:
         max_epochs=cfg.model.n_epochs,
         accelerator="gpu" if torch.cuda.is_available() else "cpu",
         devices=cfg.host.device if torch.cuda.is_available() else "auto",
-        precision=32 if cfg.data.scale else "bf16-mixed",
+        precision=32 if cfg.task.scale else "bf16-mixed",
         default_root_dir=f"{cfg.host.workdir}/out/models/",
     )
 
     pred_dfs = []
-    for fold in range(cfg.data.n_splits):
+    for fold in range(cfg.task.n_splits):
         model.load_state_dict(
             torch.load(
-                f"{cfg.host.workdir}/out/{cfg.data.task}/models/model{fold}.pt")
+                f"{cfg.host.workdir}/out/{cfg.task.name}/models/model{fold}.pt")
         )
 
         train_preds = trainer.predict(model, train_loader)
         valid_preds = trainer.predict(model, valid_loader)
         test_preds = trainer.predict(model, test_loader)
 
-        if cfg.data.scale and surfpro.scaled:
+        if cfg.task.scale and surfpro.scaled:
             unscaler = surfpro.unscale
         else:
             unscaler = None
@@ -94,7 +94,7 @@ def fill_table(cfg: DictConfig) -> None:
     df_ensemble_preds["SMILES"] = pred_dfs[0]["SMILES"]
     df_ensemble_preds["types"] = pred_dfs[0]["types"]
     df_ensemble_preds["split"] = pred_dfs[0]["split"]
-    for prop in cfg.data.props:
+    for prop in cfg.task.props:
         for fold, preds in enumerate(pred_dfs):
             assert all(df_ensemble_preds["SMILES"] == preds["SMILES"])
         preds = np.array([df[prop] for df in pred_dfs])
@@ -114,19 +114,19 @@ def fill_table(cfg: DictConfig) -> None:
         drop=True
     )
     df_ensemble_preds.to_csv(
-        f"{cfg.host.workdir}/out/{cfg.data.task}/df_ensemble_preds.csv"
+        f"{cfg.host.workdir}/out/{cfg.task.name}/df_ensemble_preds.csv"
     )
 
     ######################
     # fill the table: update NaNs in 'raw' dataset with ensemble pred
     ######################
-    df_raw = pd.read_csv(f"{cfg.host.workdir}/data/{cfg.data.task}/df_raw.csv")
+    df_raw = pd.read_csv(f"{cfg.host.workdir}/data/{cfg.task.name}/df_raw.csv")
     df_merged = df_raw.reset_index(drop=True).copy().sort_values(by="SMILES")
 
     df_merged["types"] = df_ensemble_preds["types"]
 
     # copy rows for standard deviations to be 'filled', fill with 0 std for not predicted
-    for prop in cfg.data.props:
+    for prop in cfg.task.props:
         df_merged[f"{prop}_std"] = df_merged[prop].copy()
         df_merged[f"{prop}_std"] = df_merged[f"{prop}_std"].apply(
             lambda x: 0 if pd.notna(x) else np.nan
@@ -137,10 +137,10 @@ def fill_table(cfg: DictConfig) -> None:
     df_merged = df_merged.sort_values(
         by=["types", "SMILES"]).reset_index(drop=True)
 
-    order = [pair for prop in cfg.data.props for pair in (prop, f"{prop}_std")]
+    order = [pair for prop in cfg.task.props for pair in (prop, f"{prop}_std")]
     df_merged = df_merged[["SMILES", "types", *order]]
     df_merged.to_csv(
-        f"{cfg.host.workdir}/out/{cfg.data.task}/filled_table_merged.csv")
+        f"{cfg.host.workdir}/out/{cfg.task.name}/filled_table_merged.csv")
 
 
 def flatten_scale(pred_dict, props, split, unscaler=None):
