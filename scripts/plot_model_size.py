@@ -156,19 +156,22 @@ def plot_model_size(cfg: DictConfig) -> None:
             )
 
             ax.set_xticks([32, 64, 96])
+            ax.tick_params(axis="x", labelsize=13)
+            ax.tick_params(axis="y", labelsize=13)
+            # ax.set_xticklabels([32, 64, 96], fontsize=12)
+
+            # ax.yticks(fontsize=12)
+
         ax.set_title(
             f"{proptex}",
-            fontsize=18,
+            fontsize=20,
         )
     axes[0].set_ylabel(
         f"Mean Absolute Error (MAE)",
-        fontsize=14,
+        fontsize=16,
     )
 
-    fig.supxlabel(
-        "AttentiveFP hidden dimension",
-        fontsize=14,
-    )
+    fig.supxlabel("AttentiveFP hidden dimension", fontsize=16, y=0.03)
     # ax.set_xlabel(
     #     f"Model size (AttentiveFP hidden dimension)",
     # )
@@ -192,7 +195,7 @@ def plot_model_size(cfg: DictConfig) -> None:
                         linestyle="--", lw=2)  # marker="o",
     handles.append(legend_ens)
     labels.append("ensemble")
-    ax.legend(handles=handles, labels=labels, loc="upper right", fontsize=13)
+    ax.legend(handles=handles, labels=labels, loc="upper right", fontsize=16)
 
     # handles, labels = axes[0].get_legend_handles_labels()
     # handles = handles[3:] + handles[:3]

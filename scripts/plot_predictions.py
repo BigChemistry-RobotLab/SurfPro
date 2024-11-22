@@ -12,7 +12,7 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_sco
 
 @hydra.main(version_base="1.3", config_path="../conf", config_name="config")
 def plot_predictions(cfg: DictConfig) -> None:
-    print("TRAIN CONFIG from params.yaml")
+    print("PLOT CONFIG from params.yaml")
     cfg = OmegaConf.load("./params.yaml")
     print(OmegaConf.to_yaml(cfg))
 
@@ -21,7 +21,7 @@ def plot_predictions(cfg: DictConfig) -> None:
 
     # load data and calculate errors
     df_raw = pd.read_csv(f"{dataroot}/df_raw.csv")
-    print(df_raw)
+    print(df_raw.sample(5))
     df_preds = pd.read_csv(f"{root}/df_ensemble_preds.csv")
 
     labels = np.array(df_raw[cfg.task.props])
@@ -35,7 +35,7 @@ def plot_predictions(cfg: DictConfig) -> None:
     units = cfg.task.units
 
     types = df_preds.loc[:, "types"]
-    print("Surfacant Type", types)
+    # print("Surfacant Type", types)
     type_map = {typ: i for i, typ in enumerate(np.unique(types))}
     inv_map = {v: k for k, v in type_map.items()}
     types = np.array([type_map[typ] for typ in types])
@@ -69,8 +69,8 @@ def plot_predictions(cfg: DictConfig) -> None:
             y = labels[notnan, ix]
             yhat = preds[notnan, ix]
 
-            print("prop:", _pname, "n:", n_samples,
-                  len(y), len(yhat), "type", types[0])
+            # print("prop:", _pname, "n:", n_samples,
+            #       len(y), len(yhat), "type", types[0])
 
             # n_samples = len(y[np.where(np.isnan(y) == 1)])
             if len(y) > 1 and len(yhat) > 1:

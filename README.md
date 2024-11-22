@@ -48,10 +48,10 @@ Schematic visualization of the Langmuir isotherm using the Szyszkowski equation 
 Surfactant molecules adsorb to the air-water interface and lower the surface tension. 
 With increasing surfactant concentration (x-axis, log scale) the surface tension $\gamma$ (y-axis) decreases until the interface is saturated and $\gamma$ stops decreasing further. 
 Beyond this critical point, surfactants self-assemble into micelles.
-Surfactant properties can be extracted from this experimentally determined isotherm: the critical micelle concentration (CMC) and the surface tension at the CMC ($\gamma_{CMC}$).
-C20 is defined as the surfactant concentration required to reduce the surface tension $\gamma_0$ (72mN/m for water at room temperature) by 20 mN/m, which quantifies the surfactant's efficiency.
-$\Gamma_{max}$ characterizes the slope at the steepest descent of the isoterm (shown in orange), which is assumed to be at $\gamma_{20}$.
-The area of the surfactant at the air-water interface $A_{min}$ and the surface pressure at CMC $\pi_{CMC}$ can also be determined from the isotherm (not visualized).
+Surfactant properties can be extracted from this experimentally determined isotherm: the critical micelle concentration (CMC) and the surface tension at the CMC ($\gamma_{\mathrm{CMC}}$).
+$\mathrm{C_{20}}$ is defined as the surfactant concentration required to reduce the surface tension $\gamma_0$ (72mN/m for water at room temperature) by 20 mN/m, which quantifies the surfactant's efficiency.
+$\Gamma_{\mathrm{max}}$ characterizes the slope at the steepest descent of the isoterm (shown in orange), which is assumed to be at $\gamma_{20}$.
+The area of the surfactant at the air-water interface $\mathrm{A_{min}}$ and the surface pressure at CMC $\pi_{\mathrm{CMC}}$ can also be determined from the isotherm (not visualized).
 
 ## Dataloader
 We provide a dataloader in [src/dataloader.py](src/dataloader.py), which transforms [surfpro_train.csv](surfpro_train.csv) and [surfpro_test.csv](surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [src.dataloader.SurfProDB](src.dataloader.SurfProDB) and [src.dataloader.DataSplit](src.dataloader.DataSplit)). 
@@ -60,14 +60,14 @@ The [scripts/make_baselines.py](scripts/make_baselines.py) script uses the datal
 
 ## Featurizers
 We used an established featurization approach to obtain molecular representations suitable as input for any graph neural network in [src/featurizer.py](src/featurizer.py).
-We adapted the AttentiveFP implementation [Github](https://github.com/OpenDrugAI/AttentiveFP/blob/master/code/AttentiveFP/) code to interface with `pytorch-geometric.Data` and `pytorch-geometric.nn.models.AttentiveFP` [docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.AttentiveFP.html).
+We extended the graph input featurization from AttentiveFP implementation [[Github](https://github.com/OpenDrugAI/AttentiveFP/blob/master/code/AttentiveFP/)] to interface with `pytorch-geometric.Data` and `pytorch-geometric.nn.models.AttentiveFP` [docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.AttentiveFP.html).
 We used the RDKit 200-bit fingerprint (`'featurize = rdkit'`), as well as Morgan fingerprints `'featurize = ecfp'` for our baselines.
-[src.dataloader.SurfProDB](src.dataloader.SurfProDB) accepts the argument `'featurize = ..'` to load and featurize them.
+[src/dataloader/SurfProDB](src/dataloader/SurfProDB) accepts the argument `'featurize = ..'` to load and featurize them.
 
 
 ## Tasks
 We explored the following **tasks**.
-The [SurfProDB](src.dataloader.SurfProDB) accepts the argument `'task = ..'`.
+The [SurfProDB](src/dataloader/SurfProDB) accepts the argument `'task = ..'`.
 - single-property pCMC [[task='cmc']](conf/task/cmc.yaml)
 - single-property AW_ST_CMC [[task='awst']](conf/task/awst.yaml)
 - single-property Gamma_max [[task='gamma']](conf/task/gamma.yaml)
