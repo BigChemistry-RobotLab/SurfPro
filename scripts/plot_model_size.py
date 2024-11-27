@@ -227,7 +227,7 @@ def plot_model_size(cfg: DictConfig) -> None:
     #     model_sizes = [32, 64, 96]
     #     offset = -0.5
     #     for setting, color in list(zip(model_settings, colors)):
-    #         if setting == "multi" and prop in ["PC20"]:
+    #         if setting == "multi" and prop in ["pC20"]:
     #             continue
     #
     #         avgs, stds, ensembles = [], [], []

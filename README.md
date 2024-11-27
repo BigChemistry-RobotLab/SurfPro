@@ -60,9 +60,9 @@ The [scripts/make_baselines.py](scripts/make_baselines.py) script uses the datal
 
 ## Featurizers
 We used an established featurization approach to obtain molecular representations suitable as input for any graph neural network in [src/featurizer.py](src/featurizer.py).
-We extended the graph input featurization from AttentiveFP implementation [[Github](https://github.com/OpenDrugAI/AttentiveFP/blob/master/code/AttentiveFP/)] to interface with `pytorch-geometric.Data` and `pytorch-geometric.nn.models.AttentiveFP` [docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.AttentiveFP.html).
-We used the RDKit 200-bit fingerprint (`'featurize = rdkit'`), as well as Morgan fingerprints `'featurize = ecfp'` for our baselines.
-[src/dataloader/SurfProDB](src/dataloader/SurfProDB) accepts the argument `'featurize = ..'` to load and featurize them.
+We extended the graph input featurization from AttentiveFP implementation [[Github](https://github.com/OpenDrugAI/AttentiveFP/blob/master/code/AttentiveFP/)] to interface with `pytorch-geometric.Data` and `pytorch-geometric.nn.models.AttentiveFP` (see [docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.AttentiveFP.html)).
+We used the RDKit 200-bit fingerprint (`'featurize = rdkit'`), as well as Morgan fingerprints (`'featurize = ecfp'`) for our baselines.
+[src/dataloader/SurfProDB](src/dataloader/SurfProDB) accepts the argument `'featurize = graph'` to load and featurize them.
 
 
 ## Tasks

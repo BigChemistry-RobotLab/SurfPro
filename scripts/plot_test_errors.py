@@ -211,7 +211,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
             fig, ax = plt.subplots(figsize=(10, 6))
             position = 0
 
-            if prop in ['PC20']:
+            if prop in ['pC20']:
                 colors = ['coral'] * 3 + \
                     ['darkorange'] * 3 + ['dodgerblue'] * 4
             else:
@@ -220,7 +220,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
 
             for model_idx, model in enumerate(models + multitask_models + baselines):
 
-                if 'multi' in model and prop in ['PC20']:
+                if 'multi' in model and prop in ['pC20']:
                     continue
 
                 plotted_models.append(model)
