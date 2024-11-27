@@ -1,4 +1,4 @@
-SMILES,type,temp,pCMC,AW_ST_CMC,Gamma_max,Area_min,Pi_CMC,PC20,fold
+SMILES,type,temp,pCMC,AW_ST_CMC,Gamma_max,Area_min,Pi_CMC,pC20,fold
 CCCCCCCCCCCCCCOS(=O)(=O)[O-].[Na+],anionic,25,2.67778070526608,34.8,,,37.2,3.09,2
 O=S(=O)([O-])C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F.[Li+],anionic,25,2.20065945054642,29.8,0.000003,0.55,42.2,3.2,8
 CC(C)(C)OCCCCCCCCCCCCOS(=O)(=O)[O-].[Na+],anionic,25,2.85698519974591,44,0.0000011,1.51,28,3.18,1

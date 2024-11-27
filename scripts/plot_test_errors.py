@@ -54,7 +54,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
     root = f"{cfg.host.workdir}/results/{cfg.task.name}"
 
     # Load data from JSON files
-    properties = ['pCMC', 'AW_ST_CMC', 'Gamma_max', 'PC20']
+    properties = ['pCMC', 'AW_ST_CMC', 'Gamma_max', 'pC20']
 
     properties_tex = [
         'pCMC', '$\gamma_{CMC}$ (AW_ST_CMC)', '$\Gamma_{max} \cdot 10^6$ (Gamma_max) ', '$pC_{20}$']
@@ -80,7 +80,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
         'pCMC': 'cmc',
         'AW_ST_CMC': 'awst',
         'Gamma_max': 'gamma',
-        'PC20': 'pc20',
+        'pC20': 'pc20',
         'multi': 'multi',
         'all': 'all'
     }
@@ -90,7 +90,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
             'pCMC-MAE', 'pCMC-RMSE',
             'AW_ST_CMC-MAE', 'AW_ST_CMC-RMSE',
             'Gamma_max-MAE', 'Gamma_max-RMSE',
-            'PC20-MAE', 'PC20-RMSE',
+            'pC20-MAE', 'pC20-RMSE',
         ]
     )
 
@@ -128,7 +128,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
         with open(f'{froot}/{abbrev}/{model}/test_result_final.json', 'r') as file:
             metrics = json.load(file)
             for prop in properties:
-                if abbrev in ['multi'] and prop in ['pc20', 'PC20']:
+                if abbrev in ['multi'] and prop in ['pc20', 'pC20']:
                     # TODO ADD NaN's
                     ensemble_mae[prop].append(np.nan)
                     avg_mae[prop].append(np.nan)

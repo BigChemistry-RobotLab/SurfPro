@@ -10,7 +10,7 @@ from matplotlib.lines import Line2D
 
 @hydra.main(version_base="1.3", config_path="../conf", config_name="config")
 def plot_model_size(cfg: DictConfig) -> None:
-    properties = ["pCMC", "AW_ST_CMC", "Gamma_max", "PC20"]
+    properties = ["pCMC", "AW_ST_CMC", "Gamma_max", "pC20"]
     properties_tex = [
         "pCMC",
         "$\gamma_{CMC}$",
@@ -38,7 +38,7 @@ def plot_model_size(cfg: DictConfig) -> None:
         "pCMC": "cmc",
         "AW_ST_CMC": "awst",
         "Gamma_max": "gamma",
-        "PC20": "pc20",
+        "pC20": "pc20",
         "multi": "multi",
         "all": "all",
     }
@@ -48,7 +48,7 @@ def plot_model_size(cfg: DictConfig) -> None:
             "pCMC-MAE",
             "AW_ST_CMC-MAE",
             "Gamma_max-MAE",
-            "PC20-MAE",
+            "pC20-MAE",
         ]
     )
 
@@ -85,7 +85,7 @@ def plot_model_size(cfg: DictConfig) -> None:
         ) as file:  # results_test_metrics.json
             metrics = json.load(file)
             for prop in properties:
-                if abbrev in ["multi"] and prop in ["pc20", "PC20"]:
+                if abbrev in ["multi"] and prop in ["pc20", "pC20"]:
                     ensemble_mae[prop].append(np.nan)
                     avg_mae[prop].append(np.nan)
                     std_mae[prop].append(np.nan)
@@ -123,7 +123,7 @@ def plot_model_size(cfg: DictConfig) -> None:
         model_sizes = [32, 64, 96]
         offset = -0.75
         for setting, color in list(zip(model_settings, colors)):
-            if setting == "multi" and prop in ["PC20"]:
+            if setting == "multi" and prop in ["pC20"]:
                 continue
 
             avgs, stds, ensembles = [], [], []

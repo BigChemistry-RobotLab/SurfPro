@@ -26,7 +26,7 @@ def test_split():
 
     # multi_props = ["pCMC", "AW_ST_CMC", "Gamma_max"]
     all_props = ["pCMC", "AW_ST_CMC",
-                 "Gamma_max", "Area_min", "Pi_CMC", "PC20"]
+                 "Gamma_max", "Area_min", "Pi_CMC", "pC20"]
     other = ["SMILES", "type", "temp"]
 
     df = pd.read_csv(

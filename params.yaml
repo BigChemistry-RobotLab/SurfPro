@@ -6,7 +6,7 @@ task:
   - Gamma_max
   - Area_min
   - Pi_CMC
-  - PC20
+  - pC20
   units:
   - ''
   - mN/m

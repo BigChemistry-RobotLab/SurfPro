@@ -1,5 +1,5 @@
 name: pc20
-props: ['PC20']
+props: ['pC20']
 units: [""]
 data_seed: 42
 n_splits: 10

@@ -157,7 +157,7 @@ class SurfProDB(Dataset):
 
         if self.task in ["all", None]:
             propnames = ["pCMC", "AW_ST_CMC",
-                         "Gamma_max", "Area_min", "Pi_CMC", "PC20"]
+                         "Gamma_max", "Area_min", "Pi_CMC", "pC20"]
 
         elif self.task in ["multi"]:
             propnames = ["pCMC", "AW_ST_CMC", "Gamma_max"]
@@ -172,7 +172,7 @@ class SurfProDB(Dataset):
             propnames = ["Gamma_max"]
 
         elif self.task in ["pc20", "pC20", "PC20"]:
-            propnames = ["PC20"]
+            propnames = ["pC20"]
 
         if len(propnames) == 1:
             df = df.loc[pd.notna(df.loc[:, propnames[0]])
