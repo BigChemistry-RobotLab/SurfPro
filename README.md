@@ -6,6 +6,9 @@ In addition to the database, this repository contains all code to reproduce the 
 
 **Please cite our work if you wish to use any of the data sets**.
 
+
+<img src="figs/SurfPro_TOC_figure.png" alt="Table of Contents Figure" width="90%">
+
 ## SurfPro Database 
 The SurfPro database is provided in four csv files. `surfpro_literature.csv` is the source file with all 1624 unique surfactant structures (SMILES), their curated experimental properties from literature, as well as the reference / DOI for each property / structure.
 We split this database into a train and test set with stratification by surfactant type to obtain `surfpro_train.csv` and `surfpro_test.csv` (see Methods in the Paper or [scripts/test_split.py](scripts/test_split.py) for more details). 
@@ -51,10 +54,10 @@ Beyond this critical point, surfactants self-assemble into micelles.
 Surfactant properties can be extracted from this experimentally determined isotherm: the critical micelle concentration (CMC) and the surface tension at the CMC ($\gamma_{\mathrm{CMC}}$).
 $\mathrm{C_{20}}$ is defined as the surfactant concentration required to reduce the surface tension $\gamma_0$ (72mN/m for water at room temperature) by 20 mN/m, which quantifies the surfactant's efficiency.
 $\Gamma_{\mathrm{max}}$ characterizes the slope at the steepest descent of the isoterm (shown in orange), which is assumed to be at $\gamma_{20}$.
-The area of the surfactant at the air-water interface $\mathrm{A_{min}}$ and the surface pressure at CMC $\pi_{\mathrm{CMC}}$ can also be determined from the isotherm (not visualized).
+The area of the surfactant at the air-water interface ($\mathrm{A_{min}}$) and the surface pressure at CMC ($\pi_{\mathrm{CMC}}$) can also be determined from the isotherm (not visualized).
 
 ## Dataloader
-We provide a dataloader in [src/dataloader.py](src/dataloader.py), which transforms [surfpro_train.csv](surfpro_train.csv) and [surfpro_test.csv](surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [src.dataloader.SurfProDB](src.dataloader.SurfProDB) and [src.dataloader.DataSplit](src.dataloader.DataSplit)). 
+We provide a dataloader in [src/dataloader.py](src/dataloader.py), which transforms [surfpro_train.csv](surfpro_train.csv) and [surfpro_test.csv](surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [src/dataloader.SurfProDB](src/dataloader.py#L98) and [src/dataloader.DataSplit](src/dataloader.py#L16)). 
 The graph neural network (AttentiveFP) training script ([scripts/train_model.py](scripts/train_model.py)) uses this dataloader as part of the DVC pipeline.
 The [scripts/make_baselines.py](scripts/make_baselines.py) script uses the dataloader directly as input features for established ML models (RandomForest and Ridge) using ECFP or RDKit fingerprints.
 
