@@ -7,14 +7,15 @@ In addition to the database, this repository contains all code to reproduce the 
 **Please cite our work if you wish to use any of the data sets**.
 
 
-<img src="figs/SurfPro_TOC_figure.png" alt="Table of Contents Figure" width="90%">
+<img src="figs/SurfPro_TOC_figure.png" alt="Table of Contents Figure" width="100%">
 
 ## SurfPro Database 
-The SurfPro database is provided in four csv files. `surfpro_literature.csv` is the source file with all 1624 unique surfactant structures (SMILES), their curated experimental properties from literature, as well as the reference / DOI for each property / structure.
-We split this database into a train and test set with stratification by surfactant type to obtain `surfpro_train.csv` and `surfpro_test.csv` (see Methods in the Paper or [scripts/test_split.py](scripts/test_split.py) for more details). 
-`surfpro_test` contains a total of 140 surfactant structures, with 140 pCMC measurements, as well as all 6 properties for a subset of 70 structures.
-`surfpro_train` contains all other 1484 structures and properties, but for many structures only a subset of their properties are available.
-We used the trained models to impute these missing propreties for all 977 structures with incomplete properties, which we provide in the `surfpro_imputed.csv` file.
+The SurfPro database is provided in four csv files.
+[`surfpro_literature.csv`](data/surfpro_literature.csv) is the source file with all 1624 unique surfactant structures (SMILES), their curated experimental properties from literature, as well as the reference / DOI for each property / structure.
+We split this database into a train and test set with stratification by surfactant type to obtain [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) (see Methods in the Paper or [scripts/test_split.py](scripts/test_split.py) for more details). 
+[`surfpro_test.csv`](data/surfpro_test.csv) contains a total of 140 surfactant structures, with 140 pCMC measurements, as well as all 6 properties for a subset of 70 structures.
+[`surfpro_train.csv`](data/surfpro_train.csv) contains all other 1484 structures and properties, but for many structures only a subset of their properties are available.
+We used the trained models to impute these missing propreties for all 977 structures with incomplete properties, which we provide in the [`surfpro_imputed.csv`](data/surfpro_imputed.csv) file.
 In this file, all missing property values are imputed with predictions and uncertainties from the multi-property ensemble.
 
 ```
@@ -45,7 +46,7 @@ $\mathrm{C_{20}} = 10^{-\mathrm{pC_{20}}}$.
 
 
 ## The Langmuir isotherm
-<img src="figs/langmuir_isotherm.png" alt="Langmuir Isotherm" width="90%">
+<img src="figs/langmuir_isotherm.png" alt="Langmuir Isotherm" width="80%">
 
 Schematic visualization of the Langmuir isotherm using the Szyszkowski equation and derived properties. 
 Surfactant molecules adsorb to the air-water interface and lower the surface tension. 
@@ -57,36 +58,36 @@ $\Gamma_{\mathrm{max}}$ characterizes the slope at the steepest descent of the i
 The area of the surfactant at the air-water interface ($\mathrm{A_{min}}$) and the surface pressure at CMC ($\pi_{\mathrm{CMC}}$) can also be determined from the isotherm (not visualized).
 
 ## Dataloader
-We provide a dataloader in [src/dataloader.py](src/dataloader.py), which transforms [surfpro_train.csv](surfpro_train.csv) and [surfpro_test.csv](surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [src/dataloader.SurfProDB](src/dataloader.py#L98) and [src/dataloader.DataSplit](src/dataloader.py#L16)). 
-The graph neural network (AttentiveFP) training script ([scripts/train_model.py](scripts/train_model.py)) uses this dataloader as part of the DVC pipeline.
-The [scripts/make_baselines.py](scripts/make_baselines.py) script uses the dataloader directly as input features for established ML models (RandomForest and Ridge) using ECFP or RDKit fingerprints.
+We provide a dataloader in [`src/dataloader.py`](src/dataloader.py#L98), which transforms [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [`src/dataloader.SurfProDB`](src/dataloader.py#L98) and [`src/dataloader.DataSplit`](src/dataloader.py#L16)). 
+The graph neural network (AttentiveFP) training script ([`scripts/train_model.py`](scripts/train_model.py)) uses this dataloader as part of the DVC pipeline.
+The [`scripts/make_baselines.py`](scripts/make_baselines.py) script uses the dataloader directly as input features for established ML models (RandomForest and Ridge) using ECFP or RDKit fingerprints.
 
 ## Featurizers
-We used an established featurization approach to obtain molecular representations suitable as input for any graph neural network in [src/featurizer.py](src/featurizer.py).
-We extended the graph input featurization from AttentiveFP implementation [[Github](https://github.com/OpenDrugAI/AttentiveFP/blob/master/code/AttentiveFP/)] to interface with `pytorch-geometric.Data` and `pytorch-geometric.nn.models.AttentiveFP` (see [docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.AttentiveFP.html)).
-We used the RDKit 200-bit fingerprint (`'featurize = rdkit'`), as well as Morgan fingerprints (`'featurize = ecfp'`) for our baselines.
-[src/dataloader/SurfProDB](src/dataloader/SurfProDB) accepts the argument `'featurize = graph'` to load and featurize them.
+We used an established featurization approach to obtain molecular representations suitable as input for any graph neural network in [`src/featurizer.py`](src/featurizer.py#L187).
+We extended the graph input featurization from AttentiveFP implementation [[Github](https://github.com/OpenDrugAI/AttentiveFP/blob/master/code/AttentiveFP/)] to interface with `pytorch-geometric.Data` [[Docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.data.Data.html#torch_geometric.data.Data)] and `pytorch-geometric.nn.models.AttentiveFP` [[Docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.AttentiveFP.html)].
+[`src/dataloader.SurfProDB`](src/dataloader.py#L98) passes the argument `'featurize = graph'` to [`src/dataloader.DataSplit`](src/dataloader.py#L33), which featurizes the SMILES strings.
+For our baselines we used the RDKit 200-bit fingerprint ([`'featurize = rdkit'`](src/dataloader.py#L38)), as well as Morgan fingerprints ([`'featurize = ecfp'`](src/dataloader.py#L42)).
 
 
 ## Tasks
 We explored the following **tasks**.
-The [SurfProDB](src/dataloader/SurfProDB) accepts the argument `'task = ..'`.
-- single-property pCMC [[task='cmc']](conf/task/cmc.yaml)
-- single-property AW_ST_CMC [[task='awst']](conf/task/awst.yaml)
-- single-property Gamma_max [[task='gamma']](conf/task/gamma.yaml)
-- single-property pC20 [[task='pc20']](conf/task/pc20.yaml)
-- multi-property [[task='multi']](conf/task/multi.yaml)
-- all-property [[task='all']](conf/task/all.yaml)
+The [`SurfProDB`](src/dataloader.py#L98) class accepts the argument `'task = ..'` and splits the database accordingly. Single-property tasks do not return any NaNs, 
+- single-property pCMC [[`task='cmc'`](conf/task/cmc.yaml)]
+- single-property AW_ST_CMC [[`task='awst'`](conf/task/awst.yaml)]
+- single-property Gamma_max [[`task='gamma'`](conf/task/gamma.yaml)]
+- single-property pC20 [[`task='pc20'`](conf/task/pc20.yaml)]
+- multi-property [[`task='multi'`](conf/task/multi.yaml)]
+- all-property [[`task='all'`](conf/task/all.yaml)]
 
 
 ## Configuration: DVC + Hydra
 This project's pipeline leverages DVC and Hydra to configure the [params.yaml](params.yaml) file on-the-fly for experiments.
 
-For `task`, `model` and `host` 
-Trains and evaluates the AttentiveFP model [conf/model/attfp-32d.yaml](conf/model/attfp-32d.yaml) / [conf/model/attfp-64d.yaml](conf/model/attfp-64d.yaml) / [conf/model/attfp-96d.yaml](conf/model/attfp-96d.yaml).
+Three distinct [`/conf`](conf/) folders contain `yaml` files for each [`task`](conf/task/) and [`model`](conf/model), in addition to a [`host`]() configuration to change paths and GPU configuration.
+Trains and evaluates the AttentiveFP model [`conf/model/attfp-32d.yaml`](conf/model/attfp-32d.yaml) / [`conf/model/attfp-64d.yaml`](conf/model/attfp-64d.yaml) / [`conf/model/attfp-96d.yaml`](conf/model/attfp-96d.yaml).
 
-The full pipeline being executed is defined in [dvc.yaml](dvc.yaml), and copies the final outputs from ./out/{...} (or the temp run directory when using --queue) into /pathto/SurfPro/results/{task}/{model}/...
-For this, the absolute path is necessary, which is defined in [params.yaml](params.yaml) as host.masterdir, in contrast to the host.workdir used within an experiment. You will need to change this config file to successfully run the full 'dvc queue' pipeline.
+The full pipeline being executed is defined in [`dvc.yaml`](dvc.yaml), and copies the final outputs from ./out/{...} (or the temp run directory when using --queue) into /pathto/SurfPro/results/{task}/{model}/...
+For this, the absolute path is necessary, which is defined in [`params.yaml`](params.yaml) as host.masterdir, in contrast to the host.workdir used within an experiment. You will need to change this config file to successfully run the full 'dvc queue' pipeline.
 
 An individual model run (model variant * task) can be executed via dvc with task={...} and model={...} overrides of config files found in /conf/task/* and /conf/model/*.
 You can additionally override individual configurations: '-S 'host.device=[1]'. For `dvc queue`, the setup requires the workdir to be '.' since dvc executes the run in a temporary directory.
