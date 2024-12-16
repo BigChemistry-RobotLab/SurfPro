@@ -1,10 +1,10 @@
 # SurfPro 
 ### A curated database and predictive model of experimental properties of surfactants
-`SurfPro` is a *surf*actant *pro*perty database database of 1624 surfactants and their physical properties, including 1395 experimental measurements of the critical micelle concentration (CMC), 972 air-water surface tension at CMC ($\gamma_{\mathrm{CMC}}$) and further properties for over 650 surfactants curated from ~160 literature sources.
+`SurfPro` is a *surf*actant *pro*perty database database of 1624 surfactants and their physical properties, including 1395 experimental measurements of the critical micelle concentration (CMC), 972 air-water surface tension at CMC ($\gamma_{\mathrm{CMC}}$), and $\Gamma_{\mathrm{max}}$, $\mathrm{pC_{20}}$ and further properties for over 657 surfactants curated from 223 literature sources.
 
 In addition to the database, this repository contains all code to reproduce the model training, evaluation and prediction pipeline for the AttentiveFP models and baselines used in the paper.
 
-**Please cite our work if you wish to use any of the data sets**.
+**Please cite our work if you wish to use any of the datasets**.
 
 
 <img src="figs/SurfPro_TOC_figure.png" alt="Table of Contents Figure" width="100%">
