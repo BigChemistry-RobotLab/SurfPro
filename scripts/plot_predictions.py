@@ -1,12 +1,9 @@
 import pandas as pd
-import pickle
 import numpy as np
 import hydra
 from omegaconf import OmegaConf, DictConfig
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-# from src.dataloader import SurfactantPropertyDataset
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_score
 
 

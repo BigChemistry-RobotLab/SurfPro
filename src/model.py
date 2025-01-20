@@ -3,10 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import pytorch_lightning as pl
-from typing import List
 from torch_geometric.nn.models import AttentiveFP
-from deepchem.feat import MolGraphConvFeaturizer
-from torch_geometric.data import Data, Batch
+from torch_geometric.data import Data
 
 
 class RegressionHead(pl.LightningModule):

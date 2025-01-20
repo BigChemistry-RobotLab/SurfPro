@@ -1,18 +1,11 @@
 import pandas as pd
 import wandb
 import pickle
-import json
 import numpy as np
 import hydra
 import os
 import torch
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader
-from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-from pytorch_lightning.callbacks import LearningRateFinder
-from pytorch_lightning.loggers import WandbLogger
-
-# from pytorch_lightning.callbacks import ModelCheckpoint
 from omegaconf import OmegaConf, DictConfig
 from src.dataloader import SurfProDB, DataSplit
 from src.model import AttentiveFPModel
