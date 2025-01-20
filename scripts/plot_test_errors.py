@@ -51,7 +51,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
     print(OmegaConf.to_yaml(cfg))
 
     # dataroot = f"{cfg.host.workdir}/data/{cfg.task.name}"
-    root = f"{cfg.host.workdir}/results/{cfg.task.name}"
+    # root = f"{cfg.host.workdir}/results/{cfg.task.name}"
 
     # Load data from JSON files
     properties = ['pCMC', 'AW_ST_CMC', 'Gamma_max', 'pC20']
@@ -259,12 +259,10 @@ def plot_test_errors(cfg: DictConfig) -> None:
 
             if error == 'mae':
                 ax.set_ylabel('Mean Absolute Error (MAE)', fontsize=14)
+                fig.text(0.03, 0.933, 'a.', fontsize=28, weight='bold')
             elif error == 'rmse':
                 ax.set_ylabel('Root Mean Squared Error (RMSE)', fontsize=14)
-            ax.set_title(
-                f'{proptex} Model Comparison - Test set {error.upper()} (N={
-                    140 if prop == 'pCMC' else 70})',
-                fontsize=15)
+                fig.text(0.03, 0.933, 'b.', fontsize=28, weight='bold')
             plt.tight_layout()
             plt.savefig(f"{froot}/plots/test_box_{prop}_{error}.png",
                         dpi=300, bbox_inches="tight")

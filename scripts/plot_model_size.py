@@ -121,7 +121,7 @@ def plot_model_size(cfg: DictConfig) -> None:
         model_settings = ["single", "multi", "all"]
         colors = ["tab:blue", "tab:orange", "tab:green"]
         model_sizes = [32, 64, 96]
-        offset = -0.75
+        offset = -1
         for setting, color in list(zip(model_settings, colors)):
             if setting == "multi" and prop in ["pC20"]:
                 continue
@@ -135,7 +135,7 @@ def plot_model_size(cfg: DictConfig) -> None:
                     latex_df.at[f"{model}-ensemble", f"{prop}-MAE"])
 
             sizes = [int(size) + offset for size in model_sizes]
-            offset += 0.75
+            offset += 1  # 0.75
 
             ax.errorbar(
                 x=sizes,
@@ -143,6 +143,8 @@ def plot_model_size(cfg: DictConfig) -> None:
                 yerr=stds,
                 fmt="-o",
                 color=color,
+                capsize=3,
+                markersize=8,
                 # label=f"{setting}\navg + std",
             )
 
@@ -152,6 +154,7 @@ def plot_model_size(cfg: DictConfig) -> None:
                 linestyle="--",
                 marker="o",
                 color=color,
+                markersize=8,
                 # label=f"{setting}\nensemble",
             )
 
@@ -162,15 +165,18 @@ def plot_model_size(cfg: DictConfig) -> None:
 
             # ax.yticks(fontsize=12)
 
-        ax.set_title(
-            f"{proptex}",
-            fontsize=20,
-        )
-    axes[0].set_ylabel(
-        f"Mean Absolute Error (MAE)",
-        fontsize=16,
-    )
+        # ax.set_title(
+        #     f"{proptex}",
+        #     fontsize=20,
+        # )
+    axes[0].set_ylabel("Mean Absolute Error (MAE)", fontsize=16)
 
+    off_x = 0.05
+    off_y = 0.07
+    fig.text(off_x + 0.0, off_y + 0.925, 'a.', fontsize=20, weight='bold')
+    fig.text(off_x + 0.245, off_y + 0.925, 'b.', fontsize=20, weight='bold')
+    fig.text(off_x + 0.49, off_y + 0.925, 'c.', fontsize=20, weight='bold')
+    fig.text(off_x + 0.735, off_y + 0.925, 'd.', fontsize=20, weight='bold')
     fig.supxlabel("AttentiveFP hidden dimension", fontsize=16, y=0.03)
     # ax.set_xlabel(
     #     f"Model size (AttentiveFP hidden dimension)",
@@ -187,12 +193,12 @@ def plot_model_size(cfg: DictConfig) -> None:
         labels.append(leg)
 
     legend_avg = Line2D([0], [0], color="black",
-                        linestyle="-", marker="o", lw=2)
+                        linestyle="-", marker="o", lw=3, markersize=9)
     handles.append(legend_avg)
     labels.append("average")
 
     legend_ens = Line2D([0], [0], color="black",
-                        linestyle="--", lw=2)  # marker="o",
+                        linestyle="--", lw=2, markersize=9)  # marker="o",
     handles.append(legend_ens)
     labels.append("ensemble")
     ax.legend(handles=handles, labels=labels, loc="upper right", fontsize=16)
