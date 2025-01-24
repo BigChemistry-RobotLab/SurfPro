@@ -20,7 +20,7 @@ def map_surfactant_type(stype):
 
 
 # @hydra.main(version_base="1.3", config_path="../conf", config_name="config")
-def plot_distributions():  #cfg: DictConfig) -> None:
+def plot_distributions():  # cfg: DictConfig) -> None:
     print("PLOT CONFIG from params.yaml")
     cfg = OmegaConf.load("./params.yaml")
     print(OmegaConf.to_yaml(cfg))
@@ -45,7 +45,8 @@ def plot_distributions():  #cfg: DictConfig) -> None:
 
     for property in properties:
 
-        fig, axes = plt.subplots(2, 2, figsize=(18, 10), sharex=False, sharey=True)  
+        fig, axes = plt.subplots(2, 2, figsize=(
+            18, 10), sharex=False, sharey=True)
         axes = axes.flatten()
         for i, stype in enumerate(types):
             # if stype != 'zwitterionic':
@@ -58,26 +59,33 @@ def plot_distributions():  #cfg: DictConfig) -> None:
             print(all_df.shape)
             print(sub_df.shape)
 
-            ax.hist(all_df.loc[:, property], bins=30,
-                    alpha = 0.3, color = 'grey', edgecolor='black')
-            ax.hist(sub_df.loc[:, property], bins=30,
-                    alpha = 0.7, color = colormap[stype], edgecolor='black')
+            bins = np.linspace(
+                all_df.loc[:, property].min(), all_df.loc[:, property].max(), 31)
+            ax.hist(all_df.loc[:, property], bins=bins,
+                    alpha=0.3, color='grey', edgecolor='black')
+            ax.hist(sub_df.loc[:, property], bins=bins,
+                    alpha=0.7, color=colormap[stype], edgecolor='black')
 
             if i % 2 == 0:
                 ax.set_ylabel('Frequency', fontsize=18)
+
+            ax.autoscale(enable=True, axis='both', tight=True)
+            # if property in ['pCMC', 'pC20']:
+            #     ax.set_xlim(0, 7)
+            #     ax.set_ylim(0, 140)
+
             ax.set_xlabel(stype, fontsize=18)
-            ax.grid(axis='y', alpha=0.75)
-            ax.set_xlim(0, 7)
-            ax.set_ylim(0, 140)
+            ax.grid(axis='y', alpha=0.5)
             ax.tick_params(axis="x", labelsize=13)
             ax.tick_params(axis="y", labelsize=13)
 
-        legend_patches = [
-            Patch(facecolor=color, label=label, alpha=0.7)
-            for label, color in colormap.items()
-        ]
-        axes[1].legend(handles=legend_patches, fontsize=18, loc="upper right")
-        plt.suptitle(f'Comparison of {property} counts by surfactant type', fontsize=20)
+        # legend_patches = [
+        #     Patch(facecolor=color, label=label, alpha=0.7)
+        #     for label, color in colormap.items()
+        # ]
+        # axes[1].legend(handles=legend_patches, fontsize=18, loc="upper right")
+        plt.suptitle(f'Comparison of {
+                     property} counts by surfactant type', fontsize=20)
         plt.tight_layout()
         plt.savefig(
             f"{cfg.host.workdir}/results/plots/data_distrib_hist_{property}.png",
