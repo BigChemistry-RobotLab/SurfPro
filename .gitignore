@@ -8,6 +8,12 @@ out
 output
 outputs
 final
+# wandb repo is called SurfPro
+wandb
+SurfPro
+Untitled*.ipynb
+*.pt
+*.png
 
 .lr_find*
 */.~lock*
