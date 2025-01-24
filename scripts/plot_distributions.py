@@ -20,7 +20,7 @@ def map_surfactant_type(stype):
 
 
 # @hydra.main(version_base="1.3", config_path="../conf", config_name="config")
-def plot_distributions():  # cfg: DictConfig) -> None:
+def plot_distributions(arrange):  # cfg: DictConfig) -> None:
     print("PLOT CONFIG from params.yaml")
     cfg = OmegaConf.load("./params.yaml")
     print(OmegaConf.to_yaml(cfg))
@@ -45,8 +45,13 @@ def plot_distributions():  # cfg: DictConfig) -> None:
 
     for property in properties:
 
-        fig, axes = plt.subplots(2, 2, figsize=(
-            18, 10), sharex=False, sharey=True)
+        if arrange == 'row':
+            fig, axes = plt.subplots(2, 2, figsize=(
+                18, 10), sharex=False, sharey=True)
+        elif arrange == 'sq':
+            fig, axes = plt.subplots(1, 4, figsize=(
+                24, 10), sharex=True, sharey=True)
+
         axes = axes.flatten()
         for i, stype in enumerate(types):
             # if stype != 'zwitterionic':
@@ -69,6 +74,16 @@ def plot_distributions():  # cfg: DictConfig) -> None:
             if i % 2 == 0:
                 ax.set_ylabel('Frequency', fontsize=18)
 
+            # a. / b. / ... labels
+            blabel = chr(97 + i)  # 'a', 'b', 'c', 'd', ...
+            ax.text(
+                0.05, 0.07,               # x, y position in Axes coordinates
+                f"\\textbf{{{blabel}.}}",  # bold label, e.g. "a."
+                transform=ax.transAxes,   # make position relative to the Axes
+                ha='left', va='top',      # align text to top-left
+                fontsize=12
+            )
+
             ax.autoscale(enable=True, axis='both', tight=True)
             # if property in ['pCMC', 'pC20']:
             #     ax.set_xlim(0, 7)
@@ -88,11 +103,19 @@ def plot_distributions():  # cfg: DictConfig) -> None:
                      property} counts by surfactant type', fontsize=20)
         plt.tight_layout()
         plt.savefig(
-            f"{cfg.host.workdir}/results/plots/data_distrib_hist_{property}.png",
+            f"{cfg.host.workdir}/results/plots/data_distrib_hist_{property}_{arrange}.png",
             dpi=300,
             bbox_inches="tight",
         )
 
+        off_x = 0.05
+        off_y = 0.07
+        fig.text(off_x + 0.0, off_y + 0.925, 'a.', fontsize=20, weight='bold')
+        fig.text(off_x + 0.245, off_y + 0.925, 'b.', fontsize=20, weight='bold')
+        fig.text(off_x + 0.49, off_y + 0.925, 'c.', fontsize=20, weight='bold')
+        fig.text(off_x + 0.735, off_y + 0.925, 'd.', fontsize=20, weight='bold')
+
 
 if __name__ == "__main__":
-    plot_distributions()
+    plot_distributions(arrange='row')
+    plot_distributions(arrange='sq')
