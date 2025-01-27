@@ -34,6 +34,14 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
     types = ['gemini cationic', 'cationic', 'non-ionic', 'anionic']
 
     properties = ['pCMC', 'AW_ST_CMC', 'Gamma_max', 'pC20']
+    # units = ['pCMC (-log(M))', 'mN/m', 'mol/m^2 * 1e6', '-log(M)']
+    properties_tex = [
+        "pCMC",
+        "$\gamma_{CMC}$",
+        "$\Gamma_{max} \cdot 10^6$",
+        "$pC_{20}$",
+    ]
+
     colormap = {
         "full dataset": 'grey',
         "gemini cationic": 'tab:red',
@@ -43,14 +51,14 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
         # "zwitterionic": 'tab:purple',
     }
 
-    for property in properties:
+    for property, tex in list(zip(properties, properties_tex)):
 
-        if arrange == 'row':
+        if arrange == 'sq':
             fig, axes = plt.subplots(2, 2, figsize=(
                 18, 10), sharex=False, sharey=True)
-        elif arrange == 'sq':
+        elif arrange == 'row':
             fig, axes = plt.subplots(1, 4, figsize=(
-                24, 10), sharex=True, sharey=True)
+                24, 6), sharex=True, sharey=True)
 
         axes = axes.flatten()
         for i, stype in enumerate(types):
@@ -58,6 +66,8 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
             ax = axes[i]
             all_df = df.loc[:, ['SMILES', 'type', property]]
             all_df = all_df.dropna(axis=0).reset_index(drop=True)
+            if property == 'Gamma_max':
+                all_df.loc[:, property] = all_df.loc[:, property] * 1e6
             sub_df = all_df.iloc[np.where(all_df['type'] == stype)]
 
             print('\n', property, stype)
@@ -71,25 +81,25 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
             ax.hist(sub_df.loc[:, property], bins=bins,
                     alpha=0.7, color=colormap[stype], edgecolor='black')
 
-            if i % 2 == 0:
+            all_median = np.median(all_df.loc[:, property])
+            ax.axvline(all_median, color='dimgrey', linestyle='dashed', linewidth=2)
+            sub_median = np.median(sub_df.loc[:, property])
+            ax.axvline(sub_median, color=colormap[stype], linestyle='dashed', linewidth=2)
+
+            if arrange == 'sq' and i % 2 == 0:
+                ax.set_ylabel('Frequency', fontsize=18)
+            elif arrange == 'row' and i == 0:
                 ax.set_ylabel('Frequency', fontsize=18)
 
-            # a. / b. / ... labels
+            if i >= 2 or arrange == 'row':
+                ax.set_xlabel(tex, fontsize=18)
+
             blabel = chr(97 + i)  # 'a', 'b', 'c', 'd', ...
-            ax.text(
-                0.05, 0.07,               # x, y position in Axes coordinates
-                f"\\textbf{{{blabel}.}}",  # bold label, e.g. "a."
-                transform=ax.transAxes,   # make position relative to the Axes
-                ha='left', va='top',      # align text to top-left
-                fontsize=12
-            )
+            ax.text(-0.01, 1.01, f"{blabel}.", transform=ax.transAxes,
+                    fontsize=20, fontweight='bold', va='top', ha='right')
 
             ax.autoscale(enable=True, axis='both', tight=True)
-            # if property in ['pCMC', 'pC20']:
-            #     ax.set_xlim(0, 7)
-            #     ax.set_ylim(0, 140)
 
-            ax.set_xlabel(stype, fontsize=18)
             ax.grid(axis='y', alpha=0.5)
             ax.tick_params(axis="x", labelsize=13)
             ax.tick_params(axis="y", labelsize=13)
@@ -99,8 +109,8 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
         #     for label, color in colormap.items()
         # ]
         # axes[1].legend(handles=legend_patches, fontsize=18, loc="upper right")
-        plt.suptitle(f'Comparison of {
-                     property} counts by surfactant type', fontsize=20)
+        # plt.suptitle(f'Comparison of {
+        #              property} counts by surfactant type', fontsize=20)
         plt.tight_layout()
         plt.savefig(
             f"{cfg.host.workdir}/results/plots/data_distrib_hist_{property}_{arrange}.png",
@@ -108,14 +118,7 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
             bbox_inches="tight",
         )
 
-        off_x = 0.05
-        off_y = 0.07
-        fig.text(off_x + 0.0, off_y + 0.925, 'a.', fontsize=20, weight='bold')
-        fig.text(off_x + 0.245, off_y + 0.925, 'b.', fontsize=20, weight='bold')
-        fig.text(off_x + 0.49, off_y + 0.925, 'c.', fontsize=20, weight='bold')
-        fig.text(off_x + 0.735, off_y + 0.925, 'd.', fontsize=20, weight='bold')
-
 
 if __name__ == "__main__":
-    plot_distributions(arrange='row')
     plot_distributions(arrange='sq')
+    plot_distributions(arrange='row')

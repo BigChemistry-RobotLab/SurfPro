@@ -98,9 +98,9 @@ You can additionally override individual configurations: '-S 'host.device=[1]'. 
 ```
 git clone https://github.com/BigChemistry-RobotLab/SurfPro.git
 cd SurfPro
-conda create -n surfpro
+conda create -n surfpro python=3.12.4
 conda activate surfpro
-conda install pip
+conda install pip 
 pip install -r requirements.txt
 
 dvc config hydra.enabled=True
