@@ -1,6 +1,6 @@
 # SurfPro 
 ### A curated database and predictive model of experimental properties of surfactants
-`SurfPro` is a *surf*actant *pro*perty database database of 1624 surfactants and their physical properties, including 1395 experimental measurements of the critical micelle concentration (CMC), 972 air-water surface tension at CMC ($\gamma_{\mathrm{CMC}}$), and $\Gamma_{\mathrm{max}}$, $\mathrm{pC_{20}}$ and further properties for over 657 surfactants curated from 223 literature sources.
+`SurfPro` is a *surf*actant *pro*perty database database of 1624 surfactants and their physical properties, including 1395 experimental measurements of the critical micelle concentration (pCMC), 972 air-water surface tension at CMC ($\gamma_{\mathrm{CMC}}$), and $\Gamma_{\mathrm{max}}$, $\mathrm{pC_{20}}$ and further properties for over 657 surfactants curated from 223 literature sources.
 
 In addition to the database, this repository contains all code to reproduce the model training, evaluation and prediction pipeline for the AttentiveFP models and baselines used in the paper.
 
@@ -39,9 +39,9 @@ We collected 6 properties of surfactants in the database, which are derived from
 | $\pi_{\mathrm{CMC}}$                      | Pi\_CMC          | surface pressure at CMC              | $\mathrm{mN/m}$    | 744   |
 
 pCMC refers to the negative log10 of the CMC in Molar ([mol/L]): 
-$\mathrm{pCMC} = -\log(\mathrm{CMC})$.
+$\mathrm{pCMC} = -\log_{10}(\mathrm{CMC})$.
 
-Similarly, C20 refers to the inverse of pC20: 
+Similarly, $\mathrm{C_{20}}$ refers to the inverse of $\mathrm{pC_{20}}$: 
 $\mathrm{C_{20}} = 10^{-\mathrm{pC_{20}}}$.
 
 
@@ -60,13 +60,13 @@ The area of the surfactant at the air-water interface ($\mathrm{A_{min}}$) and t
 ## Dataloader
 We provide a dataloader in [`src/dataloader.py`](src/dataloader.py#L98), which transforms [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [`src/dataloader.SurfProDB`](src/dataloader.py#L98) and [`src/dataloader.DataSplit`](src/dataloader.py#L16)). 
 The graph neural network (AttentiveFP) training script ([`scripts/train_model.py`](scripts/train_model.py)) uses this dataloader as part of the DVC pipeline.
-The [`scripts/make_baselines.py`](scripts/make_baselines.py) script uses the dataloader directly as input features for established ML models (RandomForest and Ridge) using ECFP or RDKit fingerprints.
+The [`scripts/make_baselines.py`](scripts/make_baselines.py) script uses the dataloader directly as input features for established ML models (RandomForest and Ridge) using ECFP or RDKit topological fingerprints (RDKFP).
 
 ## Featurizers
 We used an established featurization approach to obtain molecular representations suitable as input for any graph neural network in [`src/featurizer.py`](src/featurizer.py#L187).
 We extended the graph input featurization from AttentiveFP implementation [[Github](https://github.com/OpenDrugAI/AttentiveFP/blob/master/code/AttentiveFP/)] to interface with `pytorch-geometric.Data` [[Docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.data.Data.html#torch_geometric.data.Data)] and `pytorch-geometric.nn.models.AttentiveFP` [[Docs](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.AttentiveFP.html)].
 [`src/dataloader.SurfProDB`](src/dataloader.py#L98) passes the argument `'featurize = graph'` to [`src/dataloader.DataSplit`](src/dataloader.py#L33), which featurizes the SMILES strings.
-For our baselines we used the RDKit 200-bit fingerprint ([`'featurize = rdkit'`](src/dataloader.py#L38)), as well as Morgan fingerprints ([`'featurize = ecfp'`](src/dataloader.py#L42)).
+For our baselines we used the RDKit fingerprint (RDKFP) ([`'featurize = rdkit'`](src/dataloader.py#L38)), as well as Morgan fingerprints (ECFP) ([`'featurize = ecfp'`](src/dataloader.py#L42)).
 
 
 ## Tasks
@@ -92,9 +92,7 @@ For this, the absolute path is necessary, which is defined in [`params.yaml`](pa
 An individual model run (model variant * task) can be executed via dvc with task={...} and model={...} overrides of config files found in /conf/task/* and /conf/model/*.
 You can additionally override individual configurations: '-S 'host.device=[1]'. For `dvc queue`, the setup requires the workdir to be '.' since dvc executes the run in a temporary directory.
 
-
-# Reproducing results of the paper 
-### Conda setup 
+# Conda setup 
 ```
 git clone https://github.com/BigChemistry-RobotLab/SurfPro.git
 cd SurfPro
@@ -108,7 +106,7 @@ dvc config hydra.enabled=True
 dvc exp run -S 'task=multi' -S 'model=attfp-64d' -S 'host=local' -S 'host.masterdir="/path/to/your/SurfPro"'
 ```
 
-
+# Reproducing results of the paper 
 ### reproduce all AttentiveFP model experiments
 ```
 dvc exp run --queue -S 'task=all,multi,cmc,awst,gamma,pc20' -S 'model=attfp-32d,attfp-64d,attfp-96d' -S 'host=queue'
@@ -116,7 +114,7 @@ dvc exp run --queue -S 'task=all,multi,cmc,awst,gamma,pc20' -S 'model=attfp-32d,
 # or directly override: [...] -S host.masterdir="/path/to/your/SurfPro"'
 ```
 
-### reproduce all baselines experiments (RDKit | ECFP x Ridge | RF for 4 single-property tasks)
+### reproduce all baselines experiments (RDKFP | ECFP x Ridge | RF for 4 single-property tasks)
 ```
 python scripts/make_baselines.py
 ```
@@ -160,4 +158,3 @@ wandb offline
 # or
 wandb disabled
 ```
-

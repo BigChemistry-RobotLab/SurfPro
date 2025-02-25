@@ -36,10 +36,10 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
     properties = ['pCMC', 'AW_ST_CMC', 'Gamma_max', 'pC20']
     # units = ['pCMC (-log(M))', 'mN/m', 'mol/m^2 * 1e6', '-log(M)']
     properties_tex = [
-        "pCMC",
-        "$\gamma_{CMC}$",
-        "$\Gamma_{max} \cdot 10^6$",
-        "$pC_{20}$",
+        "$\mathrm{pCMC}$",
+        "$\gamma_{\mathrm{CMC}}$ $(\mathrm{mN/m})$",
+        "$\Gamma_{\mathrm{max}}$ $(\mathrm{mol/m^2}$ $\cdot$ $10^6)$",
+        "$\mathrm{pC_{20}}$",
     ]
 
     colormap = {
@@ -51,7 +51,7 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
         # "zwitterionic": 'tab:purple',
     }
 
-    for property, tex in list(zip(properties, properties_tex)):
+    for j, (property, tex) in enumerate(list(zip(properties, properties_tex))):
 
         if arrange == 'sq':
             fig, axes = plt.subplots(2, 2, figsize=(
@@ -82,14 +82,18 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
                     alpha=0.7, color=colormap[stype], edgecolor='black')
 
             all_median = np.median(all_df.loc[:, property])
-            ax.axvline(all_median, color='dimgrey', linestyle='dashed', linewidth=2)
+            ax.axvline(all_median, color='dimgrey',
+                       linestyle='dashed', linewidth=2)
             sub_median = np.median(sub_df.loc[:, property])
-            ax.axvline(sub_median, color=colormap[stype], linestyle='dashed', linewidth=2)
+            ax.axvline(
+                sub_median, color=colormap[stype], linestyle='dashed', linewidth=2)
 
             if arrange == 'sq' and i % 2 == 0:
                 ax.set_ylabel('Frequency', fontsize=18)
             elif arrange == 'row' and i == 0:
                 ax.set_ylabel('Frequency', fontsize=18)
+                ax.text(-0.072, 1.01, f"{int(j+1)}.", transform=ax.transAxes,
+                        fontsize=20, fontweight='bold', va='top', ha='right')
 
             if i >= 2 or arrange == 'row':
                 ax.set_xlabel(tex, fontsize=18)
