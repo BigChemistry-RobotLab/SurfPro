@@ -28,13 +28,8 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
     df = pd.read_csv(f'{cfg.host.workdir}/data/surfpro_literature.csv')
     df['type'] = df['Surfactant_Type'].apply(map_surfactant_type)
 
-    # types, types_count = np.unique(df.type, return_counts=True)
-    # print('\noverall counts:')
-    # [print(k,v) for k,v in list(zip(types, types_count))]
     types = ['gemini cationic', 'cationic', 'non-ionic', 'anionic']
-
     properties = ['pCMC', 'AW_ST_CMC', 'Gamma_max', 'pC20']
-    # units = ['pCMC (-log(M))', 'mN/m', 'mol/m^2 * 1e6', '-log(M)']
     properties_tex = [
         "$\mathrm{pCMC}$",
         "$\gamma_{\mathrm{CMC}}$ $(\mathrm{mN/m})$",
@@ -55,7 +50,7 @@ def plot_distributions(arrange):  # cfg: DictConfig) -> None:
 
         if arrange == 'sq':
             fig, axes = plt.subplots(2, 2, figsize=(
-                18, 10), sharex=False, sharey=True)
+                14, 10), sharex=False, sharey=True)
         elif arrange == 'row':
             fig, axes = plt.subplots(1, 4, figsize=(
                 24, 6), sharex=True, sharey=True)
