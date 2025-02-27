@@ -29,16 +29,15 @@ def rename_models(models: list[str], prepend_r=False):
         if 'ecfp' in model:
             model = model.replace('ecfp', 'ECFP')
         elif 'rdkit' in model:
-            model = model.replace('rdkit', 'RDKit')
+            model = model.replace('rdkit', 'RDKFP')
 
         model = model.replace('ridge', 'Ridge')
         model = model.replace('rf', 'RF')
 
-        if 'AttentiveFP' in model:
-            if prepend_r:
-                model = 'r"$' + model + '$"'
-            else:
-                model = '$' + model + '$'
+        if 'AttentiveFP' in model and prepend_r:
+            model = 'r"$' + model + '$"'
+        else:
+            model = '$\mathrm{' + model + '}$'
         print(model)
         fmodels.append(model)
     return fmodels
@@ -58,7 +57,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
 
     properties_tex = [
         'pCMC', '$\gamma_{CMC}$ (AW_ST_CMC)', '$\Gamma_{max} \cdot 10^6$ (Gamma_max) ', '$pC_{20}$']
-    models = ['AttentiveFP-32d', 'AttentiveFP-64d', 'AttentiveFP-96d']  #
+    models = ['AttentiveFP-32d', 'AttentiveFP-64d', 'AttentiveFP-96d']
     multitask_models = ['AttentiveFP-32d-multi',
                         'AttentiveFP-64d-multi',
                         'AttentiveFP-96d-multi',
@@ -100,6 +99,8 @@ def plot_test_errors(cfg: DictConfig) -> None:
             abbrev = abbrev_map[prop]
             with open(f'{froot}/{abbrev}/{model}-{abbrev}/test_result_final.json', 'r') as file:
                 metrics = json.load(file)
+                assert prop in list(metrics.keys())
+                print(list(metrics.keys()))
                 for i in range(cfg.task.n_splits):
                     fold_mae = metrics[prop][f'raw_mae_fold{i}']
                     raw_mae.append([prop, model, fold_mae])
@@ -128,8 +129,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
         with open(f'{froot}/{abbrev}/{model}/test_result_final.json', 'r') as file:
             metrics = json.load(file)
             for prop in properties:
-                if abbrev in ['multi'] and prop in ['pc20', 'pC20']:
-                    # TODO ADD NaN's
+                if abbrev in ['multi'] and prop in ['pc20', 'pC20', 'PC20']:
                     ensemble_mae[prop].append(np.nan)
                     avg_mae[prop].append(np.nan)
                     ensemble_rmse[prop].append(np.nan)
@@ -232,7 +232,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
                                     widths=0.6, patch_artist=True)
 
                 boxplt['boxes'][0].set_facecolor(colors[position-1])
-                boxplt['medians'][0].set_color('black')  # Set to dark blue
+                boxplt['medians'][0].set_color('black')
 
                 avg_value = avg_preds[prop][model_idx]
                 ax.plot(position, avg_value, marker='o',
@@ -247,7 +247,6 @@ def plot_test_errors(cfg: DictConfig) -> None:
             # Customizing the plot
             ax.set_xticks(range(1, len(plotted_models)+1))
             ax.set_xticklabels(
-                # plotted_models,
                 rename_models(plotted_models, prepend_r=False),
                 rotation=45, ha='right', fontsize=12)
 
