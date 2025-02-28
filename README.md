@@ -101,8 +101,9 @@ conda activate surfpro
 conda install pip 
 pip install -r requirements.txt
 
-dvc config hydra.enabled=True
+export PYTHONPATH=./:$PYTHONPATH
 
+dvc config hydra.enabled=True
 dvc exp run -S 'task=multi' -S 'model=attfp-64d' -S 'host=local' -S 'host.masterdir="/path/to/your/SurfPro"'
 ```
 
