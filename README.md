@@ -15,8 +15,9 @@ The SurfPro database is provided in four csv files.
 We split this database into a train and test set with stratification by surfactant type to obtain [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) (see Methods in the Paper or [scripts/test_split.py](scripts/test_split.py) for more details). 
 [`surfpro_test.csv`](data/surfpro_test.csv) contains a total of 140 surfactant structures, with 140 pCMC measurements, as well as all 6 properties for a subset of 70 structures.
 [`surfpro_train.csv`](data/surfpro_train.csv) contains all other 1484 structures and properties, but for many structures only a subset of their properties are available.
-We used the trained models to impute these missing propreties for all 977 structures with incomplete properties, which we provide in the [`surfpro_imputed.csv`](data/surfpro_imputed.csv) file.
+We used the trained models to impute these missing properties for all 977 structures with incomplete properties, which we provide in the [`surfpro_imputed.csv`](data/surfpro_imputed.csv) file.
 In this file, all missing property values are imputed with predictions and uncertainties from the multi-property ensemble.
+We also provide a ['bibliography file'](data/surfpro_bibliography.bib) with all references.
 
 ```
 data/surfpro_literature.csv         raw dataset with references (1624 structures, incomplete properties)
