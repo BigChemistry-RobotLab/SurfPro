@@ -12,10 +12,10 @@ from matplotlib.lines import Line2D
 def plot_model_size(cfg: DictConfig) -> None:
     properties = ["pCMC", "AW_ST_CMC", "Gamma_max", "pC20"]
     properties_tex = [
-        "pCMC",
-        "$\gamma_{CMC}$",
-        "$\Gamma_{max} \cdot 10^6$",
-        "$pC_{20}$",
+        "$\mathrm{pCMC}$",
+        "$\gamma_{\mathrm{CMC}}$ $(\mathrm{mN/m})$",
+        "$\Gamma_{\mathrm{max}}$ $(\mathrm{mol/m^2}$ $\cdot$ $10^6)$",
+        "$\mathrm{pC_{20}}$",
     ]
 
     models = ["AttentiveFP-32d", "AttentiveFP-64d", "AttentiveFP-96d"]
@@ -33,7 +33,7 @@ def plot_model_size(cfg: DictConfig) -> None:
     avg_mae = {prop: [] for prop in properties}
     std_mae = {prop: [] for prop in properties}
 
-    froot = f"{cfg.host.masterdir}/final"  # /results
+    froot = f"{cfg.host.masterdir}/results"
     abbrev_map = {
         "pCMC": "cmc",
         "AW_ST_CMC": "awst",
@@ -58,7 +58,7 @@ def plot_model_size(cfg: DictConfig) -> None:
             abbrev = abbrev_map[prop]
             with open(
                 f"{froot}/{abbrev}/{model}-{abbrev}/test_result_final.json",
-                "r",  # results_test_metrics.json
+                "r",
             ) as file:
                 metrics = json.load(file)
 
@@ -145,7 +145,6 @@ def plot_model_size(cfg: DictConfig) -> None:
                 color=color,
                 capsize=3,
                 markersize=8,
-                # label=f"{setting}\navg + std",
             )
 
             ax.plot(
@@ -155,20 +154,12 @@ def plot_model_size(cfg: DictConfig) -> None:
                 marker="o",
                 color=color,
                 markersize=8,
-                # label=f"{setting}\nensemble",
             )
 
             ax.set_xticks([32, 64, 96])
             ax.tick_params(axis="x", labelsize=13)
             ax.tick_params(axis="y", labelsize=13)
-            # ax.set_xticklabels([32, 64, 96], fontsize=12)
 
-            # ax.yticks(fontsize=12)
-
-        # ax.set_title(
-        #     f"{proptex}",
-        #     fontsize=20,
-        # )
     axes[0].set_ylabel("Mean Absolute Error (MAE)", fontsize=16)
 
     off_x = 0.05
@@ -178,11 +169,6 @@ def plot_model_size(cfg: DictConfig) -> None:
     fig.text(off_x + 0.49, off_y + 0.925, 'c.', fontsize=20, weight='bold')
     fig.text(off_x + 0.735, off_y + 0.925, 'd.', fontsize=20, weight='bold')
     fig.supxlabel("AttentiveFP hidden dimension", fontsize=16, y=0.03)
-    # ax.set_xlabel(
-    #     f"Model size (AttentiveFP hidden dimension)",
-    # )
-
-    # fig.suptitle("Model size comparison", fontsize=18)  # , x=0.4)
 
     # set up legend w / ensemble dash line
     handles, labels = axes[0].get_legend_handles_labels()
@@ -203,95 +189,13 @@ def plot_model_size(cfg: DictConfig) -> None:
     labels.append("ensemble")
     ax.legend(handles=handles, labels=labels, loc="upper right", fontsize=16)
 
-    # handles, labels = axes[0].get_legend_handles_labels()
-    # handles = handles[3:] + handles[:3]
-    # labels = labels[3:] + labels[:3]
-
-    # plt.legend(handles[3:], labels[3:], loc="upper right", fontsize=13)
-    # plt.legend(handles[:3], labels[:3], loc="upper right", fontsize=13)
-    # plt.legend(handles, labels, loc="center left",
-    #            fontsize=13, bbox_to_anchor=(1, 0.5))
-    # plt.tight_layout(rect=[0, 0, 0.85, 1])
-
     plt.tight_layout()
-
-    # save
     plt.savefig(
         f"{froot}/plots/model_size_comparison_all.png",
         dpi=300,
         bbox_inches="tight",
     )
     plt.close(fig)
-
-    # SINGLE PLOT PER PROPERTY
-    # # fig, axes = plt.subplots(1, 4, figsize=(12, 6))
-    # for i, (prop, proptex) in enumerate(list(zip(properties, properties_tex))):
-    #     fig, ax = plt.subplots(figsize=(8, 6))
-    #
-    #     model_settings = ["single", "multi", "all"]
-    #     colors = ["tab:blue", "tab:orange", "tab:green"]
-    #     model_sizes = [32, 64, 96]
-    #     offset = -0.5
-    #     for setting, color in list(zip(model_settings, colors)):
-    #         if setting == "multi" and prop in ["pC20"]:
-    #             continue
-    #
-    #         avgs, stds, ensembles = [], [], []
-    #         for size in model_sizes:
-    #             model = f"AttentiveFP-{size}d-{setting}"
-    #             avgs.append(latex_df.at[f"{model}-avg", f"{prop}-MAE"])
-    #             stds.append(latex_df.at[f"{model}-std", f"{prop}-MAE"])
-    #             ensembles.append(
-    #                 latex_df.at[f"{model}-ensemble", f"{prop}-MAE"])
-    #
-    #         sizes = [int(size) + offset for size in model_sizes]
-    #         offset += 0.5
-    #         plt.errorbar(
-    #             x=sizes,
-    #             y=avgs,
-    #             yerr=stds,
-    #             fmt="-o",
-    #             color=color,
-    #             label=f"{setting}-property",
-    #         )
-    #
-    #         plt.plot(sizes, ensembles, linestyle="--", color=color)
-    #
-    #     ax.set_title(
-    #         f"Model size comparison: {proptex}",
-    #         # f"Model Size Comparison",
-    #         # - Test set {error.upper()} (N={
-    #         # 140 if prop == 'pCMC' else 70})',
-    #         fontsize=15,
-    #     )
-    #     # axes[0].set_ylabel(
-    #     ax.set_ylabel(
-    #         f"Mean Absolute Error (MAE)",
-    #         fontsize=14,
-    #     )
-    #     plt.xticks([32, 64, 96])
-    #
-    #     # set up legend w/ ensemble dash line
-    #     handles, labels = ax.get_legend_handles_labels()
-    #     # legend_avg = Line2D([0], [0], color="black",
-    #     #                     linestyle="-", marker="o", lw=2)
-    #     # handles.append(legend_avg)
-    #     # labels.append("average + std.dev")
-    #
-    #     legend_ens = Line2D([0], [0], color="black", linestyle="--", lw=2)
-    #     handles.append(legend_ens)
-    #     labels.append("ensemble")
-    #     ax.legend(handles=handles, labels=labels,
-    #               loc="upper right", fontsize=13)
-    #
-    #     # save
-    #     plt.tight_layout()
-    #     plt.savefig(
-    #         f"{froot}/plots/model_size_comparison_{prop}.png",
-    #         dpi=300,
-    #         bbox_inches="tight",
-    #     )
-    #     plt.close(fig)
 
 
 if __name__ == "__main__":
