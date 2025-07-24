@@ -77,7 +77,7 @@ def train(cfg: DictConfig) -> None:
             logger=wandb_logger if torch.cuda.is_available() else None,
             precision=32 if cfg.task.scale else "bf16-mixed",
             default_root_dir=f"{workdir}/models/",
-            callbacks=[lr_find, early_stop],
+            callbacks=[lr_find, early_stop]
         )
         print(OmegaConf.to_yaml(cfg))
 
