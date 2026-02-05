@@ -1,4 +1,4 @@
-# SurfPro 
+# SurfPro
 ### A curated database and predictive model of experimental properties of surfactants
 `SurfPro` is a *surf*actant *pro*perty database database of 1624 surfactants and their physical properties, including 1395 experimental measurements of the critical micelle concentration (pCMC), 972 air-water surface tension at CMC ($\gamma_{\mathrm{CMC}}$), and $\Gamma_{\mathrm{max}}$, $\mathrm{pC_{20}}$ and further properties for over 657 surfactants curated from 223 literature sources.
 
@@ -6,13 +6,24 @@ In addition to the database, this repository contains all code to reproduce the 
 
 **Please cite our work if you wish to use any of the datasets**.
 
+## Correction / Update Notice
+A significant number of surfactant structures have been corrected in the source file (`surfpro_literature.csv`).
+The original version at time of publication can be found under [`Releases` - `SurfPro_release`](https://github.com/BigChemistry-RobotLab/SurfPro/releases/tag/SurfPro_release).
+Surfactant structures were verified and correct, and checked for duplicate entries, affecting >100 structures.
+Properties from duplicates were merged, duplicate structures removed.
+Most of these were non-ionic ethyoxlate structures with errors derived from 10.1016/j.ces.2022.118208.
+Many corrections affect structures derived from 10.1021/ie4016232.
+'Mixtures' with large counterions (eg "CS(=O)(=O)[O-]" or "COS(=O)(=O)[O-]") were removed.
+Surfactant type classification for some sugar-based & non-ionic structures were corrected.
+$\Gamma_{\mathrm{max}}$ has been corrected for some surafctant structures.
+
 
 <img src="figs/SurfPro_TOC_figure.png" alt="Table of Contents Figure" width="100%">
 
-## SurfPro Database 
+## SurfPro Database
 The SurfPro database is provided in four csv files.
 [`surfpro_literature.csv`](data/surfpro_literature.csv) is the source file with all 1624 unique surfactant structures (SMILES), their curated experimental properties from literature, as well as the reference / DOI for each property / structure.
-We split this database into a train and test set with stratification by surfactant type to obtain [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) (see Methods in the Paper or [scripts/test_split.py](scripts/test_split.py) for more details). 
+We split this database into a train and test set with stratification by surfactant type to obtain [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) (see Methods in the Paper or [scripts/test_split.py](scripts/test_split.py) for more details).
 [`surfpro_test.csv`](data/surfpro_test.csv) contains a total of 140 surfactant structures, with 140 pCMC measurements, as well as all 6 properties for a subset of 70 structures.
 [`surfpro_train.csv`](data/surfpro_train.csv) contains all other 1484 structures and properties, but for many structures only a subset of their properties are available.
 We used the trained models to impute these missing properties for all 977 structures with incomplete properties, which we provide in the [`surfpro_imputed.csv`](data/surfpro_imputed.csv) file.
@@ -23,7 +34,7 @@ We also provide a ['bibliography file'](data/surfpro_bibliography.bib) with all 
 data/surfpro_literature.csv         raw dataset with references (1624 structures, incomplete properties)
 data/surfpro_train.csv              csv ready for training training & validation (1484 structures)
 data/surfpro_test.csv               stratified test set for evaluation (140 structures)
-data/surfpro_imputed.csv            imputed database (1624 structures with predictions for all missing properties) 
+data/surfpro_imputed.csv            imputed database (1624 structures with predictions for all missing properties)
 ```
 
 ## Properties
@@ -39,19 +50,19 @@ We collected 6 properties of surfactants in the database, which are derived from
 | $\mathrm{A_{min}}$                        | Area\_CMC        | area at the air-water interface      | $\mathrm{nm^2}$    | 678   |
 | $\pi_{\mathrm{CMC}}$                      | Pi\_CMC          | surface pressure at CMC              | $\mathrm{mN/m}$    | 744   |
 
-pCMC refers to the negative log10 of the CMC in Molar ([mol/L]): 
+pCMC refers to the negative log10 of the CMC in Molar ([mol/L]):
 $\mathrm{pCMC} = -\log_{10}(\mathrm{CMC})$.
 
-Similarly, $\mathrm{C_{20}}$ refers to the inverse of $\mathrm{pC_{20}}$: 
+Similarly, $\mathrm{C_{20}}$ refers to the inverse of $\mathrm{pC_{20}}$:
 $\mathrm{C_{20}} = 10^{-\mathrm{pC_{20}}}$.
 
 
 ## The Langmuir isotherm
 <img src="figs/langmuir_isotherm.png" alt="Langmuir Isotherm" width="80%">
 
-Schematic visualization of the Langmuir isotherm using the Szyszkowski equation and derived properties. 
-Surfactant molecules adsorb to the air-water interface and lower the surface tension. 
-With increasing surfactant concentration (x-axis, log scale) the surface tension $\gamma$ (y-axis) decreases until the interface is saturated and $\gamma$ stops decreasing further. 
+Schematic visualization of the Langmuir isotherm using the Szyszkowski equation and derived properties.
+Surfactant molecules adsorb to the air-water interface and lower the surface tension.
+With increasing surfactant concentration (x-axis, log scale) the surface tension $\gamma$ (y-axis) decreases until the interface is saturated and $\gamma$ stops decreasing further.
 Beyond this critical point, surfactants self-assemble into micelles.
 Surfactant properties can be extracted from this experimentally determined isotherm: the critical micelle concentration (CMC) and the surface tension at the CMC ($\gamma_{\mathrm{CMC}}$).
 $\mathrm{C_{20}}$ is defined as the surfactant concentration required to reduce the surface tension $\gamma_0$ (72mN/m for water at room temperature) by 20 mN/m, which quantifies the surfactant's efficiency.
@@ -59,7 +70,7 @@ $\Gamma_{\mathrm{max}}$ characterizes the slope at the steepest descent of the i
 The area of the surfactant at the air-water interface ($\mathrm{A_{min}}$) and the surface pressure at CMC ($\pi_{\mathrm{CMC}}$) can also be determined from the isotherm (not visualized).
 
 ## Dataloader
-We provide a dataloader in [`src/dataloader.py`](src/dataloader.py#L98), which transforms [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [`src/dataloader.SurfProDB`](src/dataloader.py#L98) and [`src/dataloader.DataSplit`](src/dataloader.py#L16)). 
+We provide a dataloader in [`src/dataloader.py`](src/dataloader.py#L98), which transforms [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [`src/dataloader.SurfProDB`](src/dataloader.py#L98) and [`src/dataloader.DataSplit`](src/dataloader.py#L16)).
 The graph neural network (AttentiveFP) training script ([`scripts/train_model.py`](scripts/train_model.py)) uses this dataloader as part of the DVC pipeline.
 The [`scripts/make_baselines.py`](scripts/make_baselines.py) script uses the dataloader directly as input features for established ML models (RandomForest and Ridge) using ECFP or RDKit topological fingerprints (RDKFP).
 
@@ -72,7 +83,7 @@ For our baselines we used the RDKit fingerprint (RDKFP) ([`'featurize = rdkit'`]
 
 ## Tasks
 We explored the following **tasks**.
-The [`SurfProDB`](src/dataloader.py#L98) class accepts the argument `'task = ..'` and splits the database accordingly. Single-property tasks do not return any NaNs, 
+The [`SurfProDB`](src/dataloader.py#L98) class accepts the argument `'task = ..'` and splits the database accordingly. Single-property tasks do not return any NaNs,
 - single-property pCMC [[`task='cmc'`](conf/task/cmc.yaml)]
 - single-property AW_ST_CMC [[`task='awst'`](conf/task/awst.yaml)]
 - single-property Gamma_max [[`task='gamma'`](conf/task/gamma.yaml)]
@@ -93,13 +104,13 @@ For this, the absolute path is necessary, which is defined in [`params.yaml`](pa
 An individual model run (model variant * task) can be executed via dvc with task={...} and model={...} overrides of config files found in /conf/task/* and /conf/model/*.
 You can additionally override individual configurations: '-S 'host.device=[1]'. For `dvc queue`, the setup requires the workdir to be '.' since dvc executes the run in a temporary directory.
 
-# Conda setup 
+# Conda setup
 ```
 git clone https://github.com/BigChemistry-RobotLab/SurfPro.git
 cd SurfPro
 conda create -n surfpro python=3.12.4
 conda activate surfpro
-conda install pip 
+conda install pip
 pip install -r requirements.txt
 
 export PYTHONPATH=./:$PYTHONPATH
@@ -108,7 +119,7 @@ dvc config hydra.enabled=True
 dvc exp run -S 'task=multi' -S 'model=attfp-64d' -S 'host=local' -S 'host.masterdir="/path/to/your/SurfPro"'
 ```
 
-# Reproducing results of the paper 
+# Reproducing results of the paper
 ### reproduce all AttentiveFP model experiments
 ```
 dvc exp run --queue -S 'task=all,multi,cmc,awst,gamma,pc20' -S 'model=attfp-32d,attfp-64d,attfp-96d' -S 'host=queue'
@@ -140,13 +151,13 @@ dvc exp run --queue -S 'task=cmc' -S 'model=attfp-64d' -S 'model.n_epochs=1000' 
 ### process train/test.csv into featurized DataSplits using params.yaml & conf/task/*
 ```
 python src/dataloader.py
-# writes surfpro.pickle file to 
+# writes surfpro.pickle file to
 # {cfg.host.workdir}/data/{cfg.task.name}/surfpro.pkl
 ```
 
 
-## DVC credentials and wandb 
-DVC requires git credentials to create local commits tracking experiments. 
+## DVC credentials and wandb
+DVC requires git credentials to create local commits tracking experiments.
 You can use arbitrary credentials if you do not want to provide yours.
 ```
 git config user.name "Your Name"
