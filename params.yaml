@@ -18,12 +18,12 @@ task:
   n_splits: 10
   scale: true
 model:
-  name: AttentiveFP-64d
-  n_epochs: 10
+  name: AttentiveFP-96d
+  n_epochs: 500
   seed: 42
   n_batch: 64
-  hidden_channels: 64
-  out_channels: 128
+  hidden_channels: 96
+  out_channels: 192
   num_layers: 2
   num_timesteps: 2
   dropout: 0.1

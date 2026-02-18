@@ -3,13 +3,13 @@ params:
 
 stages:
   split_data:
-    cmd: 
+    cmd:
       - pwd
-      - export PYTHONPATH=${host.masterdir}:$PYTHONPATH
-      - echo $PYTHONPATH
+      # - export PYTHONPATH=${host.masterdir}:$PYTHONPATH
+      # - echo $PYTHONPATH
       - echo "SPLIT DATA ${task.name}"
       - mkdir -p data/${task.name}/
-      - python3 src/dataloader.py
+      - uv run python src/dataloader.py
     params:
       - task
       - host
@@ -22,11 +22,11 @@ stages:
       - data/${task.name}/surfpro.pkl
 
   train:
-    cmd: 
+    cmd:
       - rm -fR out/${task.name}
       - mkdir -p out/${task.name}/models
       - echo "TRAIN ${task.name}"
-      - python3 scripts/train_model.py 
+      - uv run python scripts/train_model.py
     params:
       - task
       - model
@@ -42,9 +42,9 @@ stages:
       - out/${task.name}/test_preds_folds.csv
 
   predict:
-    cmd: 
+    cmd:
       - echo "PREDICT ${task.name}"
-      - python3 scripts/fill_table.py 
+      - uv run python scripts/fill_table.py
     params:
       - task
       - model
@@ -52,7 +52,7 @@ stages:
     deps:
       - src/model.py
       - out/${task.name}/models
-      - scripts/fill_table.py 
+      - scripts/fill_table.py
       - data/${task.name}/surfpro.pkl
       - data/${task.name}/df_raw.csv
     outs:
@@ -60,9 +60,9 @@ stages:
       - out/${task.name}/filled_table_merged.csv
 
   evaluate:
-    cmd: 
+    cmd:
       - echo "EVALUATE ${task.name}"
-      - python3 scripts/evaluate_model.py 
+      - uv run python scripts/evaluate_model.py
     params:
       - task
       - model
@@ -79,10 +79,10 @@ stages:
       - out/${task.name}/eval_metrics.csv
 
   plot:
-    cmd: 
+    cmd:
       - echo "PLOTTING ${task.name}"
       - mkdir -p out/${task.name}/plots/parity
-      - python3 scripts/plot_predictions.py 
+      - uv run python scripts/plot_predictions.py
       - mkdir -p ${host.masterdir}/results/${task.name}/
       - mkdir -p ${host.masterdir}/results/plots/
       - cp params.yaml out/${task.name}/params.yaml
@@ -100,4 +100,4 @@ stages:
       - out/${task.name}/plots/:
           persist: true
 
-  # - python3 scripts/plot_test_errors.py
+  # - uv run python scripts/plot_test_errors.py
