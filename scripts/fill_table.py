@@ -7,8 +7,8 @@ import os
 import torch
 import pytorch_lightning as pl
 from omegaconf import OmegaConf, DictConfig
-from src.dataloader import SurfProDB, DataSplit
-from src.model import AttentiveFPModel
+from surfpro.dataloader import SurfProDB, DataSplit
+from surfpro.model import AttentiveFPModel
 from torch_geometric.data import Data, Batch
 
 torch.set_float32_matmul_precision("high")

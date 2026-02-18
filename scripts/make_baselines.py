@@ -6,7 +6,7 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_score
 import numpy as np
 import json
-from src.dataloader import SurfProDB
+from surfpro.dataloader import SurfProDB
 import os
 
 
