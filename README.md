@@ -104,16 +104,16 @@ For this, the absolute path is necessary, which is defined in [`params.yaml`](pa
 An individual model run (model variant * task) can be executed via dvc with task={...} and model={...} overrides of config files found in /conf/task/* and /conf/model/*.
 You can additionally override individual configurations: '-S 'host.device=[1]'. For `dvc queue`, the setup requires the workdir to be '.' since dvc executes the run in a temporary directory.
 
-# Conda setup
+# Environment setup with UV
 ```
+# install uv
+# curl -LsSf https://astral.sh/uv/install.sh | sh
+
 git clone https://github.com/BigChemistry-RobotLab/SurfPro.git
 cd SurfPro
-conda create -n surfpro python=3.12.4
-conda activate surfpro
-conda install pip
-pip install -r requirements.txt
 
-export PYTHONPATH=./:$PYTHONPATH
+uv sync
+uv pip install -e .
 
 dvc config hydra.enabled=True
 dvc exp run -S 'task=multi' -S 'model=attfp-64d' -S 'host=local' -S 'host.masterdir="/path/to/your/SurfPro"'
