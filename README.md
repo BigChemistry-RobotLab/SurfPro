@@ -9,13 +9,12 @@ In addition to the database, this repository contains all code to reproduce the 
 ## Correction / Update Notice
 A significant number of surfactant structures have been corrected in the source file (`surfpro_literature.csv`).
 The original version at time of publication can be found under [`Releases` - `SurfPro_release`](https://github.com/BigChemistry-RobotLab/SurfPro/releases/tag/SurfPro_release).
-Surfactant structures were verified and correct, and checked for duplicate entries, affecting >100 structures.
-Properties from duplicates were merged, duplicate structures removed.
+Surfactant structures were verified and correct, and checked for duplicate entries, affecting >160 structures.
+Properties from duplicates were merged, duplicate structures removed. Chirality was added for sugar-based structures.
 Most of these were non-ionic ethyoxlate structures with errors derived from 10.1016/j.ces.2022.118208.
 Many corrections affect structures derived from 10.1021/ie4016232.
-'Mixtures' with large counterions (eg "CS(=O)(=O)[O-]" or "COS(=O)(=O)[O-]") were removed.
 Surfactant type classification for some sugar-based & non-ionic structures were corrected.
-$\Gamma_{\mathrm{max}}$ has been corrected for some surafctant structures.
+$\Gamma_{\mathrm{max}}$ has been corrected for some surfactant structures.
 
 
 <img src="figs/SurfPro_TOC_figure.png" alt="Table of Contents Figure" width="100%">
@@ -70,7 +69,7 @@ $\Gamma_{\mathrm{max}}$ characterizes the slope at the steepest descent of the i
 The area of the surfactant at the air-water interface ($\mathrm{A_{min}}$) and the surface pressure at CMC ($\pi_{\mathrm{CMC}}$) can also be determined from the isotherm (not visualized).
 
 ## Dataloader
-We provide a dataloader in [`src/dataloader.py`](src/dataloader.py#L98), which transforms [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [`src/dataloader.SurfProDB`](src/dataloader.py#L98) and [`src/dataloader.DataSplit`](src/dataloader.py#L16)).
+We provide a dataloader in [`src/surfpro/dataloader.py`](src/surfpro/dataloader.py#L98), which transforms [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) into ready-to-use featurized data splits, using the same 10 train/validation folds with featurization for GNNs, ECFP and RDKit (defined in [`src/surfpro/dataloader.SurfProDB`](src/surfpro/dataloader.py#L98) and [`src/surfpro/dataloader.DataSplit`](src/surfpro/dataloader.py#L16)).
 The graph neural network (AttentiveFP) training script ([`scripts/train_model.py`](scripts/train_model.py)) uses this dataloader as part of the DVC pipeline.
 The [`scripts/make_baselines.py`](scripts/make_baselines.py) script uses the dataloader directly as input features for established ML models (RandomForest and Ridge) using ECFP or RDKit topological fingerprints (RDKFP).
 
@@ -83,7 +82,7 @@ For our baselines we used the RDKit fingerprint (RDKFP) ([`'featurize = rdkit'`]
 
 ## Tasks
 We explored the following **tasks**.
-The [`SurfProDB`](src/dataloader.py#L98) class accepts the argument `'task = ..'` and splits the database accordingly. Single-property tasks do not return any NaNs,
+The [`SurfProDB`](src/surfpro/dataloader.py#L98) class accepts the argument `'task = ..'` and splits the database accordingly. Single-property tasks do not return any NaNs,
 - single-property pCMC [[`task='cmc'`](conf/task/cmc.yaml)]
 - single-property AW_ST_CMC [[`task='awst'`](conf/task/awst.yaml)]
 - single-property Gamma_max [[`task='gamma'`](conf/task/gamma.yaml)]
@@ -150,7 +149,7 @@ dvc exp run --queue -S 'task=cmc' -S 'model=attfp-64d' -S 'model.n_epochs=1000' 
 
 ### process train/test.csv into featurized DataSplits using params.yaml & conf/task/*
 ```
-python src/dataloader.py
+python src/surfpro/dataloader.py
 # writes surfpro.pickle file to
 # {cfg.host.workdir}/data/{cfg.task.name}/surfpro.pkl
 ```
