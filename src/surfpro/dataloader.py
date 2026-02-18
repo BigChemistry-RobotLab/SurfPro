@@ -10,7 +10,7 @@ import numpy as np
 from typing import List
 from sklearn.preprocessing import RobustScaler
 from torch_geometric.data import Data, Batch
-from src.featurizer import RDKitGraphFeaturizer
+from surfpro.featurizer import RDKitGraphFeaturizer
 
 
 class DataSplit(Dataset):
