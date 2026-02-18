@@ -4,7 +4,7 @@ import json
 import numpy as np
 import hydra
 from omegaconf import OmegaConf, DictConfig
-from src.dataloader import SurfProDB, DataSplit
+from surfpro.dataloader import SurfProDB, DataSplit
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_score
 
 
