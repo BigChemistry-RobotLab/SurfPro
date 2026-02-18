@@ -9,12 +9,12 @@ stages:
       # - echo $PYTHONPATH
       - echo "SPLIT DATA ${task.name}"
       - mkdir -p data/${task.name}/
-      - uv run python src/dataloader.py
+      - uv run python src/surfpro/dataloader.py
     params:
       - task
       - host
     deps:
-      - src/dataloader.py
+      - src/surfpro/dataloader.py
       - data/surfpro_train.csv
       - data/surfpro_test.csv
     outs:
@@ -33,7 +33,7 @@ stages:
       - host
     deps:
       - data/${task.name}/surfpro.pkl
-      - src/model.py
+      - src/surfpro/model.py
       - scripts/train_model.py
     outs:
       - out/${task.name}/models/:
@@ -50,7 +50,7 @@ stages:
       - model
       - host
     deps:
-      - src/model.py
+      - src/surfpro/model.py
       - out/${task.name}/models
       - scripts/fill_table.py
       - data/${task.name}/surfpro.pkl
@@ -68,7 +68,7 @@ stages:
       - model
       - host
     deps:
-      - src/model.py
+      - src/surfpro/model.py
       - scripts/evaluate_model.py
       - data/${task.name}/df_raw.csv
       - out/${task.name}/df_ensemble_preds.csv
@@ -99,5 +99,3 @@ stages:
     outs:
       - out/${task.name}/plots/:
           persist: true
-
-  # - uv run python scripts/plot_test_errors.py

@@ -19,7 +19,6 @@ from torch_geometric.data import Data, Batch
 torch.set_float32_matmul_precision("high")
 torch.use_deterministic_algorithms(True)
 os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
-wandb.require("core")
 
 
 @hydra.main(version_base="1.3", config_path="../conf", config_name="config")
@@ -48,7 +47,7 @@ def train(cfg: DictConfig) -> None:
         valid_loader = surfpro.valid[fold].loader(shuffle=False, num_workers=2)
 
         wandb_logger = WandbLogger(
-            project="SurfPro",
+            project="SurfProV2",
             config=OmegaConf.to_container(cfg, resolve=True),
         )
 
