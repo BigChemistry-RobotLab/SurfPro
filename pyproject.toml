@@ -1,0 +1,36 @@
+[project]
+name = "SurfPro"
+authors = [
+  {name = "Stefan Hoedl", email = "stefan.hoedl@ru.nl"},
+  {name = "Pim Dankloff", email = "pim.dankloff@ru.nl"},
+  {name = "Alexander Korotkevich", email = "alexander.korotkevich@ru.nl"},
+  {name = "Wilhelm TS Huck", email = "wilhelm.huck@ru.nl"},
+  {name = "William E. Robinson", email = "william.robinson@ru.nl"}
+]
+description = "SurfPro: A curated database and predictive model of experimental properties of surfactants"
+version = "2.0"
+readme = "README.md"
+license-files = ["LICENSE.md"]
+keywords = ["surfactants", "CMC", "surface tension", "property", "experimental", "graph neural network"]
+requires-python = "==3.14.2"
+dependencies = [
+    "dvc>=3.65.0",
+    "hydra-core>=1.3.2",
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.0",
+    "omegaconf>=2.3.0",
+    "pandas>=2.3.3",
+    "pyopenssl>=25.3.0",
+    "pytorch-lightning>=2.6.0",
+    "rdkit>=2025.9.5",
+    # "ruff>=0.14.10",
+    "scikit-learn>=1.8.0",
+    "scipy>=1.16.3",
+    "torch>=2.9.1",
+    "torch-geometric>=2.7.0",
+    "wandb>=0.23.1",
+]
+
+[project.urls]
+Github = "https://github.com/BigChemistry-RobotLab/SurfPro"
+Zenodo = "https://zenodo.org/records/14931937"
