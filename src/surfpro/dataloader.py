@@ -47,9 +47,13 @@ class DataSplit(Dataset):
                 Chem.MolFromSmiles(s)) for s in smiles]
 
         elif self.featurize == "rdprop":
+            # bcut2d = ['BCUT2D_MWHI', 'BCUT2D_MWLOW', 'BCUT2D_CHGHI', 'BCUT2D_CHGLO',
+            #         'BCUT2D_LOGPHI', 'BCUT2D_LOGPLOW', 'BCUT2D_MRHI', 'BCUT2D_MRLOW']
+            featurizer = MoleculeDescriptors.MolecularDescriptorCalculator(
+                [d[0] for d in Descriptors._descList if 'BCUTD2D' not in d[0]]
+            )
             self.feats = [np.array(list(
-                Descriptors.CalcMolDescriptors(
-                Chem.MolFromSmiles(s)).values())) for s in smiles
+                featurizer.CalcDescriptors(Chem.MolFromSmiles(s)))) for s in smiles
             ]
 
     def __len__(self):
