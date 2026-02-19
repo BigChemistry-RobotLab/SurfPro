@@ -17,6 +17,7 @@ def map_surfactant_type(stype):
         "gemini zwitterionic": "zwitterionic",
         "non-ionic": "non-ionic",
         "sugar-based non-ionic": "sugar-based non-ionic",
+        "mixture": "mixture",
     }
     return type_map.get(stype)
 
@@ -32,8 +33,9 @@ def test_split():
     df = pd.read_csv(
         f"{cfg.host.workdir}/data/surfpro_literature.csv", sep=",")
     # df["Gamma_max"] = df["Gamma_max"] * 1e6
-    df["type"] = df["Surfactant_Type"].apply(map_surfactant_type)
     df["temp"] = df["Temp_Celsius"]
+    df["type"] = df["Surfactant_Type"].apply(map_surfactant_type)
+    df = df.loc[df['type'] != 'mixture'].reset_index(drop=True)
 
     uni, cnt = np.unique(df.type, return_counts=True)
     print("overall", list(zip(uni, np.round(cnt / len(df), 2))))
@@ -41,6 +43,7 @@ def test_split():
     df_all = df.iloc[
         np.all([pd.notna(df.loc[:, p]) for p in all_props], axis=0), :
     ].reset_index(drop=True)
+
     # print("all", len(df_all))
     # uni, cnt = np.unique(df_all.type, return_counts=True)
     # print(list(zip(uni, cnt, np.round(cnt / len(df_all), 2))))
@@ -49,14 +52,9 @@ def test_split():
     #     f"{cfg.host.workdir}/data/debug/subset_allprop.csv", index=False)
     # df.to_csv(f"{cfg.host.workdir}/data/debug/subset_fulldf.csv", index=False)
 
-    df_cmc = df.iloc[
-        np.all(
-            [pd.notna(df["pCMC"]), pd.isna(df["AW_ST_CMC"]),
-             pd.isna(df["Gamma_max"])],
-            axis=0,
-        ),
-        :,
-    ].reset_index(drop=True)
+    df_cmc = df.iloc[ np.all(
+        [pd.notna(df["pCMC"]), pd.isna(df["AW_ST_CMC"]), pd.isna(df["Gamma_max"])],
+        axis=0,), :, ].reset_index(drop=True)
     # print("cmc", len(df_cmc))
     # uni, cnt = np.unique(df_cmc.type, return_counts=True)
     # print("cmc only subset", sum(cnt), len(df_cmc))

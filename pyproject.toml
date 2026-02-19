@@ -32,6 +32,10 @@ dependencies = [
     "wandb>=0.23.1",
 ]
 
+[tools.setuptools]
+packages = [ "surfpro" ]
+package-dir = { "" = "src" }
+
 [project.urls]
 Github = "https://github.com/BigChemistry-RobotLab/SurfPro"
 Zenodo = "https://zenodo.org/records/14931937"
