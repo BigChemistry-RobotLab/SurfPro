@@ -8,9 +8,12 @@ out
 output
 outputs
 final
+results
 # wandb repo is called SurfPro
+data
 wandb
 SurfPro
+SurfProV2
 Untitled*.ipynb
 *.pt
 *.png

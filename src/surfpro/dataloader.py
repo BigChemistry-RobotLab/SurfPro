@@ -1,13 +1,11 @@
 from copy import deepcopy
-import torch
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset
-from rdkit import Chem
-from rdkit.Chem import AllChem
-from rdkit.Chem import rdFingerprintGenerator
 import pandas as pd
 import numpy as np
-from typing import List
+import torch
+from torch.utils.data import DataLoader, Dataset
+from rdkit import Chem
+from rdkit.Chem import AllChem, rdFingerprintGenerator, Descriptors
+from rdkit.ML.Descriptors import MoleculeDescriptors
 from sklearn.preprocessing import RobustScaler
 from torch_geometric.data import Data, Batch
 from surfpro.featurizer import RDKitGraphFeaturizer
@@ -16,11 +14,11 @@ from surfpro.featurizer import RDKitGraphFeaturizer
 class DataSplit(Dataset):
     def __init__(
         self,
-        smiles: List[str],
-        labels: List[float],
-        types: List[str],
-        propnames: List[str] = None,
-        featurize: str = "graph",  # ['graph', 'rdkit', 'efcp']
+        smiles: list[str],
+        labels: list[float],
+        types: list[str],
+        propnames: list[str],
+        featurize: str = "graph",  # ['graph', 'efcp', 'rdkit', 'rdprop']
     ):
         self.smiles = smiles
         self.labels = torch.tensor(labels, dtype=torch.float32)
@@ -35,16 +33,23 @@ class DataSplit(Dataset):
                 bidirectional=True, self_loop=True)
             self.feats = featurizer(smiles)
 
-        elif self.featurize == "rdkit":
-            self.feats = [AllChem.RDKFingerprint(
-                Chem.MolFromSmiles(s)) for s in smiles]
-
         elif self.featurize == "ecfp":
             featurizer = rdFingerprintGenerator.GetMorganGenerator(
                 fpSize=2048, radius=2
             )
-            self.feats = [
-                featurizer.GetFingerprint(Chem.MolFromSmiles(s)) for s in smiles
+            self.feats = [featurizer.GetFingerprintAsNumPy(
+                Chem.MolFromSmiles(s)) for s in smiles
+            ]
+
+        elif self.featurize == "rdkfp":
+            featurizer = rdFingerprintGenerator.GetRDKitFPGenerator()
+            self.feats = [featurizer.GetFingerprintAsNumPy(
+                Chem.MolFromSmiles(s)) for s in smiles]
+
+        elif self.featurize == "rdprop":
+            self.feats = [np.array(list(
+                Descriptors.CalcMolDescriptors(
+                Chem.MolFromSmiles(s)).values())) for s in smiles
             ]
 
     def __len__(self):

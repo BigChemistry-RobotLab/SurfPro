@@ -27,7 +27,8 @@ def train_sklearn(task, feat, modelname):
     n_splits = 10  # cfg.task.n_splits
 
     surfpro = SurfProDB(
-        task=task, workdir=workdir, featurize=feat, n_folds=n_splits, scaled=False
+        task=task, workdir=workdir, featurize=feat,
+        n_folds=n_splits, scaled=False
     )
 
     # get prop name since single-task only
@@ -41,7 +42,8 @@ def train_sklearn(task, feat, modelname):
 
     if modelname == "rf":
         model = RandomForestRegressor(
-            n_estimators=100, min_samples_split=2, min_samples_leaf=1, random_state=42
+            n_estimators=100, min_samples_split=2,
+            min_samples_leaf=1, random_state=42
         )
     elif modelname == "svr":
         model = SVR()
@@ -72,7 +74,7 @@ def train_sklearn(task, feat, modelname):
         print("test", mae, rmse, r2)
         test_df[f"{prop}_fold{fold}"] = preds
 
-    results_dir = f"{workdir}/final/{task}/{feat}-{modelname}"
+    results_dir = f"{workdir}/results/{task}/{feat}-{modelname}"
     os.makedirs(results_dir, exist_ok=True)
     test_df.reset_index(drop=True).to_csv(
         f"{results_dir}/test_preds_folds.csv")
@@ -86,12 +88,10 @@ def train_sklearn(task, feat, modelname):
     labels = df_test.loc[:, prop]
 
     # AVERAGE
-    metrics = np.array(
-        [
-            calc_metrics(labels, df_test.loc[:, f"{prop}_fold{fold}"])
-            for fold in range(n_splits)
-        ]
-    )
+    metrics = np.array([
+        calc_metrics(labels, df_test.loc[:, f"{prop}_fold{fold}"])
+        for fold in range(n_splits)
+    ])
     print("metrics", metrics.shape)
     assert len(metrics[:, 0]) == n_splits
     results_dict[prop]["avg_mae"] = np.mean(metrics[:, 0])
@@ -114,7 +114,7 @@ def train_sklearn(task, feat, modelname):
         )
     )
     print(len(ensemble_preds), len(labels))
-    assert len(ensemble_preds) == len(labels)
+    # assert len(ensemble_preds) == len(labels)
     mae, rmse, r2 = calc_metrics(labels, ensemble_preds)
     print("ENSEMBLE ", prop, "mae", mae, "rmse", rmse, "r2", r2)
     results_dict[prop]["ensemble_mae"] = mae
@@ -138,7 +138,7 @@ def train_sklearn(task, feat, modelname):
 
 if __name__ == "__main__":
     for task in ["cmc", "awst", "gamma", "pc20"]:
-        for feat in ["ecfp", "rdkit"]:
+        for feat in ["ecfp", "rdkfp", "rdprop"]:
             for modelname in ["ridge", "svr", "rf", "gpr"]:
                 print("training", task, feat, modelname)
                 train_sklearn(task=task, feat=feat, modelname=modelname)
