@@ -9,7 +9,7 @@ stages:
       # - echo $PYTHONPATH
       - echo "SPLIT DATA ${task.name}"
       - mkdir -p data/${task.name}/
-      - PYTHONPATH=src uv run --active python src/surfpro/dataloader.py
+      - uv run --frozen python src/surfpro/dataloader.py
     params:
       - task
       - host
@@ -26,7 +26,7 @@ stages:
       - rm -fR out/${task.name}
       - mkdir -p out/${task.name}/models
       - echo "TRAIN ${task.name}"
-      - PYTHONPATH=src uv run --active python scripts/train_model.py
+      - uv run --frozen python scripts/train_model.py
     params:
       - task
       - model
@@ -44,7 +44,7 @@ stages:
   predict:
     cmd:
       - echo "PREDICT ${task.name}"
-      - PYTHONPATH=src uv run --active python scripts/fill_table.py
+      - uv run --frozen python scripts/fill_table.py
     params:
       - task
       - model
@@ -62,7 +62,7 @@ stages:
   evaluate:
     cmd:
       - echo "EVALUATE ${task.name}"
-      - PYTHONPATH=src uv run --active python scripts/evaluate_model.py
+      - uv run --frozen python scripts/evaluate_model.py
     params:
       - task
       - model
@@ -82,7 +82,7 @@ stages:
     cmd:
       - echo "PLOTTING ${task.name}"
       - mkdir -p out/${task.name}/plots/parity
-      - PYTHONPATH=src uv run --active python scripts/plot_predictions.py
+      - uv run --frozen python scripts/plot_predictions.py
       - mkdir -p ${host.masterdir}/results/${task.name}/
       - mkdir -p ${host.masterdir}/results/plots/
       - cp params.yaml out/${task.name}/params.yaml

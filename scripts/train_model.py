@@ -1,5 +1,5 @@
 import pandas as pd
-import wandb
+# import wandb
 import pickle
 import json
 import numpy as np
@@ -7,7 +7,6 @@ import hydra
 import os
 import torch
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.callbacks import LearningRateFinder
 from pytorch_lightning.loggers import WandbLogger
@@ -17,8 +16,8 @@ from surfpro.model import AttentiveFPModel
 from torch_geometric.data import Data, Batch
 
 torch.set_float32_matmul_precision("high")
-torch.use_deterministic_algorithms(True)
-os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+# torch.use_deterministic_algorithms(True)
+# os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
 
 
 @hydra.main(version_base="1.3", config_path="../conf", config_name="config")
@@ -63,20 +62,19 @@ def train(cfg: DictConfig) -> None:
 
         early_stop = EarlyStopping(
             monitor="valid/mae",
-            patience=50,
+            patience=20,
             mode="min",
             check_on_train_epoch_end=False,
         )
-        lr_find = LearningRateFinder()
 
         trainer = pl.Trainer(
             max_epochs=cfg.model.n_epochs,
             accelerator="gpu" if torch.cuda.is_available() else "cpu",
             devices=cfg.host.device if torch.cuda.is_available() else "auto",
             logger=wandb_logger if torch.cuda.is_available() else None,
-            precision=32 if cfg.task.scale else "bf16-mixed",
+            precision=32,
             default_root_dir=f"{workdir}/models/",
-            callbacks=[lr_find, early_stop],
+            callbacks=[early_stop],
         )
         print(OmegaConf.to_yaml(cfg))
 
