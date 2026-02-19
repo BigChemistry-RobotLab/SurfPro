@@ -85,7 +85,7 @@ class AttentiveFPModel(pl.LightningModule):
             metrics[f"{prefix}/props-rmse/{prop}"] = torch.sqrt(
                 self.criterion_mse(labels[:, i], preds[:, i])
             )
-        self.log_dict(metrics, batch_size=64)
+        self.log_dict(metrics, batch_size=labels.shape[0])
         return metrics
 
     def forward(self, feats):

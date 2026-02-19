@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "SurfPro"
 authors = [
@@ -31,10 +35,6 @@ dependencies = [
     "torch-geometric>=2.7.0",
     "wandb>=0.23.1",
 ]
-
-[tools.setuptools]
-packages = [ "surfpro" ]
-package-dir = { "" = "src" }
 
 [project.urls]
 Github = "https://github.com/BigChemistry-RobotLab/SurfPro"
