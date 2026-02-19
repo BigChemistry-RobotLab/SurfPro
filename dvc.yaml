@@ -86,7 +86,7 @@ stages:
       - mkdir -p ${host.masterdir}/results/${task.name}/
       - mkdir -p ${host.masterdir}/results/plots/
       - cp params.yaml out/${task.name}/params.yaml
-      - cp -r out/${task.name}/
+      - cp -r out/${task.name}/.
         ${host.masterdir}/results/${task.name}/${model.name}-${task.name}/
     params:
       - task
