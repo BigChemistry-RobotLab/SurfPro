@@ -57,7 +57,7 @@ def plot_model_size(cfg: DictConfig) -> None:
         for prop in properties:
             abbrev = abbrev_map[prop]
             with open(
-                f"{froot}/{abbrev}/{model}-{abbrev}/test_result_final.json",
+                f"{froot}/{abbrev}/{model}-{abbrev}/results_test_metrics.json",
                 "r",
             ) as file:
                 metrics = json.load(file)
@@ -81,7 +81,7 @@ def plot_model_size(cfg: DictConfig) -> None:
     for model in multitask_models:
         abbrev = abbrev_map[model.split("-")[-1]]
         with open(
-            f"{froot}/{abbrev}/{model}/test_result_final.json", "r"
+            f"{froot}/{abbrev}/{model}/results_test_metrics.json", "r"
         ) as file:  # results_test_metrics.json
             metrics = json.load(file)
             for prop in properties:
