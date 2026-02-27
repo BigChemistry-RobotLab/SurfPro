@@ -28,8 +28,8 @@ def rename_models(models: list[str], prepend_r=False):
         # baselines
         if 'ecfp' in model:
             model = model.replace('ecfp', 'ECFP')
-        elif 'rdkit' in model:
-            model = model.replace('rdkit', 'RDKFP')
+        elif 'rdkfp' in model:
+            model = model.replace('rdkfp', 'RDKFP')
 
         model = model.replace('ridge', 'Ridge')
         model = model.replace('rf', 'RF')
@@ -64,7 +64,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
                         'AttentiveFP-32d-all',
                         'AttentiveFP-64d-all',
                         'AttentiveFP-96d-all']
-    baselines = ['rdkit-ridge', 'rdkit-rf',
+    baselines = ['rdkfp-ridge', 'rdkfp-rf',
                  'ecfp-ridge', 'ecfp-rf',]
     raw_mae = []
     ensemble_mae = {prop: [] for prop in properties}
@@ -97,7 +97,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
     for model in models:
         for prop in properties:
             abbrev = abbrev_map[prop]
-            with open(f'{froot}/{abbrev}/{model}-{abbrev}/test_result_final.json', 'r') as file:
+            with open(f'{froot}/{abbrev}/{model}-{abbrev}/results_test_metrics.json', 'r') as file:
                 metrics = json.load(file)
                 assert prop in list(metrics.keys())
                 print(list(metrics.keys()))
@@ -126,7 +126,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
     # Load multi-task AttentiveFP model results
     for model in multitask_models:
         abbrev = abbrev_map[model.split('-')[-1]]
-        with open(f'{froot}/{abbrev}/{model}/test_result_final.json', 'r') as file:
+        with open(f'{froot}/{abbrev}/{model}/results_test_metrics.json', 'r') as file:
             metrics = json.load(file)
             for prop in properties:
                 if abbrev in ['multi'] and prop in ['pc20', 'pC20', 'PC20']:
@@ -158,7 +158,7 @@ def plot_test_errors(cfg: DictConfig) -> None:
     for model in baselines:
         for prop in properties:
             abbrev = abbrev_map[prop]
-            with open(f'{froot}/{abbrev}/{model}/test_result_final.json', 'r') as file:
+            with open(f'{froot}/{abbrev}/{model}/results_test_metrics.json', 'r') as file:
                 metrics = json.load(file)
                 for i in range(cfg.task.n_splits):
                     fold_mae = metrics[prop][f'raw_mae_fold{i}']

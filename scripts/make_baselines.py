@@ -138,7 +138,7 @@ def train_sklearn(task, feat, modelname):
 
 if __name__ == "__main__":
     for task in ["cmc", "awst", "gamma", "pc20"]:
-        for feat in ["ecfp", "rdkfp", "rdprop"]:
-            for modelname in ["ridge", "svr", "rf", "gpr"]:
+        for feat in ["ecfp", "rdkfp", ]:  #"rdprop"
+            for modelname in ["ridge", "svr", "rf", ]:  #"gpr"
                 print("training", task, feat, modelname)
                 train_sklearn(task=task, feat=feat, modelname=modelname)
