@@ -110,20 +110,19 @@ You can additionally override individual configurations: '-S 'host.device=[1]'. 
 
 git clone https://github.com/BigChemistry-RobotLab/SurfPro.git
 cd SurfPro
-
 uv sync
-uv pip install -e .
 
 dvc config hydra.enabled=True
-dvc exp run -S 'task=multi' -S 'model=attfp-64d' -S 'host=local' -S 'host.masterdir="/path/to/your/SurfPro"'
 ```
 
 # Reproducing results of the paper
 ### reproduce all AttentiveFP model experiments
 ```
-dvc exp run --queue -S 'task=all,multi,cmc,awst,gamma,pc20' -S 'model=attfp-32d,attfp-64d,attfp-96d' -S 'host=queue'
-
-# or directly override: [...] -S host.masterdir="/path/to/your/SurfPro"'
+dvc exp run --queue \
+    -S 'task=all,multi,cmc,awst,gamma,pc20' \
+    -S 'task.n_splits=10' \
+    -S 'model=attfp-32d,attfp-64d,attfp-96d'
+    -S 'model.n_epochs=200' \
 ```
 
 ### reproduce all baselines experiments (RDKFP | ECFP x Ridge | RF for 4 single-property tasks)
@@ -133,7 +132,7 @@ python scripts/make_baselines.py
 
 ### run a single AttentiveFP experiment, overriding specific configuration
 ```
-dvc exp run -S 'task=cmc' -S 'model=attfp-32d' -S 'model.n_epochs=100' -S 'task.n_splits=2'
+dvc exp run -S 'task=cmc' -S 'model=attfp-32d' -S 'model.n_epochs=100' -S 'task.n_splits=5'
 ```
 
 ### run multiple experiments using dvc queue
