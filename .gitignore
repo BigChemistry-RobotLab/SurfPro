@@ -8,7 +8,10 @@ out
 output
 outputs
 final
-results
+results*
+out*
+final*
+
 # wandb repo is called SurfPro
 data
 wandb

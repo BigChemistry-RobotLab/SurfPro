@@ -2,7 +2,6 @@ from rdkit.Chem import MolFromSmiles
 import numpy as np
 from rdkit import Chem
 from torch_geometric.data import Data, Batch
-from typing import List
 import torch
 
 ######################
@@ -69,15 +68,14 @@ def atom_features(atom, explicit_H=False, use_chirality=True):
         results = results + \
             one_of_k_encoding_unk(atom.GetTotalNumHs(), [0, 1, 2, 3, 4])
     if use_chirality:
-        try:
-            results = (
-                results
-                + one_of_k_encoding_unk(atom.GetProp("_CIPCode"), ["R", "S"])
-                + [atom.HasProp("_ChiralityPossible")]
-            )
-        except:
-            results = results + [False, False] + \
-                [atom.HasProp("_ChiralityPossible")]
+        # modified by SH
+        if atom.HasProp("_CIPCode"):
+            chirality = one_of_k_encoding(atom.GetProp("_CIPCode"), ['R', 'S'])
+        else:
+            chirality = [False, False]
+        results = (
+            results + chirality + [atom.HasProp("_ChiralityPossible")]
+        )
 
     return np.array(results)
 
@@ -94,8 +92,8 @@ def bond_features(bond, use_chirality=True):
     ]
     if use_chirality:
         bond_feats = bond_feats + one_of_k_encoding_unk(
-            str(bond.GetStereo()), ["STEREONONE",
-                                    "STEREOANY", "STEREOZ", "STEREOE"]
+            str(bond.GetStereo()),
+            ["STEREONONE", "STEREOANY", "STEREOZ", "STEREOE"]
         )
     return np.array(bond_feats)
 
@@ -160,7 +158,7 @@ def graph_from_smiles(smiles):
     mol = MolFromSmiles(smiles)
     if not mol:
         raise ValueError("Could not parse SMILES string:", smiles)
-    Chem.AssignStereochemistry(mol, force=True, cleanIt=True)
+    Chem.AssignStereochemistry(mol, force=True, cleanIt=False)
 
     atoms_by_rd_idx = {}
     for atom in mol.GetAtoms():
@@ -254,48 +252,43 @@ class RDKitGraphFeaturizer:
             edge_attr=torch.tensor(edge_features, dtype=torch.float),
         )
 
-    def __call__(self, smiles: List[str]):
+    def __call__(self, smiles: list[str]):
         return [self.featurize_smiles(smi) for smi in smiles]
 
 
 if __name__ == "__main__":
     # verify on a couple of example surfactants
     smiles = [
+        "CCCCCCCCCO[C@@H]1O[C@H](CO)[C@@H](O)[C@H](O)[C@H]1O",
+        "CCCCCCCCCOC(=O)C([C@@H](O)C(O)[C@@H](O)CO)[C@@H](O)CO",
         "CCCCCCCCCCCC[N+](C)(C)CC[N+](C)(C)CCCCCCCCCCCC.[Br-].[Br-]",
         "CCCCCCCCCCCC[N+](C)(C)CCCCCCCCCCCC.[Br-]",
         "CCCCCCCCCCCCCCCCOCCOCCOCCOCCOCCOCCO",
         "CCCCCCCCCCCCOS(=O)(=O)[O-].[Na+]",
     ]
-    featurizer = RDKitGraphFeaturizer(bidirectional=True, self_loop=False)
+
+    featurizer = RDKitGraphFeaturizer(bidirectional=True, self_loop=True)
     pyg_graphs = featurizer(smiles)
     [g.validate(raise_on_error=True) for g in pyg_graphs]
 
-    featurizer = RDKitGraphFeaturizer(bidirectional=True, self_loop=True)
-    pyg_graphs_self = featurizer(smiles)
+    for i in range(len(smiles)):
+        print("atom feats", pyg_graphs[i].x.shape)
+        print(pyg_graphs[i].x[:, -3:])
 
-    print("edge feats")
-    print(pyg_graphs[0].edge_attr.shape, pyg_graphs_self[0].edge_attr.shape)
-    print(pyg_graphs[1].edge_attr.shape, pyg_graphs_self[1].edge_attr.shape)
-    print(pyg_graphs[2].edge_attr.shape, pyg_graphs_self[2].edge_attr.shape)
+        print("edge feats")
+        print(pyg_graphs[i].edge_attr.shape)
 
-    print(pyg_graphs[0])
-    print(pyg_graphs[1])
-    print(pyg_graphs[2])
+        print("nodes atom types")
+        print(pyg_graphs[i].x[:, :6])
 
-    print("nodes atom types")
-    print(pyg_graphs[0].x[:, :6])
+        print("edges")
+        [
+            print(t) for t in list(zip(
+            pyg_graphs[i].edge_index[0],
+            pyg_graphs[i].edge_index[1],
+            pyg_graphs[i].edge_attr[:]))
+        ]
 
-    print("edges")
-    [
-        print(t)
-        for t in list(
-            zip(
-                pyg_graphs[0].edge_index[0],
-                pyg_graphs[0].edge_index[1],
-                pyg_graphs[0].edge_attr[:],
-            )
-        )
-    ]
-
+        print(pyg_graphs[i])
     feats = Batch.from_data_list(pyg_graphs)
     print(feats)
