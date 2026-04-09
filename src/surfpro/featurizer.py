@@ -160,6 +160,8 @@ def graph_from_smiles(smiles):
     mol = MolFromSmiles(smiles)
     if not mol:
         raise ValueError("Could not parse SMILES string:", smiles)
+    Chem.AssignStereochemistry(mol, force=True, cleanIt=True)
+
     atoms_by_rd_idx = {}
     for atom in mol.GetAtoms():
         new_atom_node = graph.new_node(
