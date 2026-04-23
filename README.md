@@ -4,18 +4,39 @@
 
 In addition to the database, this repository contains all code to reproduce the model training, evaluation and prediction pipeline for the AttentiveFP models and baselines used in the paper.
 
-**Please cite our work if you wish to use any of the datasets**.
 
-## Correction / Update Notice
-A significant number of surfactant structures have been corrected in the source file (`surfpro_literature.csv`).
+# Update Notice: SurfProV2
+A significant number of surfactant structures have been updated in the SurfPro database.
+All updates are found in the source file at [`surfpro_literature.csv`](data/surfpro_literature.csv).
+The [`surfpro_train.csv`](data/surfpro_train.csv) and [`surfpro_test.csv`](data/surfpro_test.csv) files have also been updated accordingly.
+
+Chirality was added for sugar-based non-ionic structures where defined in primary sources.
+Explicit Hydrogen information was added, especially for cationic structures with nitrogen centers.
+Structures with unusual valencies were updated.
+Surfactant structures (SMILES) were verified from primary literature sources and corrected where necessary.
+Properties of duplicate structures after updating SMILES strings were merged where applicable.
+Surfactant type classification were updated, affecting mostly sugar-based non-ionics.
+Surfactant structures with organic counterions were classified as 'mixture' and excluded from the train/test split.
+A small number of surfactant properties have been added or updated.
+
+The updated SurfProV2 database contains 1504 surfactant structures (SMILES), with 1360 pCMC, 932 $\gamma_{\mathrm{CMC}}$ and 700 $\Gamma_{\mathrm{max}}$ measurements.
+
 The original version at time of publication can be found under [`Releases` - `SurfPro_release`](https://github.com/BigChemistry-RobotLab/SurfPro/releases/tag/SurfPro_release).
-Surfactant structures were verified and correct, and checked for duplicate entries, affecting >160 structures.
-Properties from duplicates were merged, duplicate structures removed. Chirality was added for sugar-based structures.
-Most of these were non-ionic ethyoxlate structures with errors derived from 10.1016/j.ces.2022.118208.
-Many corrections affect structures derived from 10.1021/ie4016232.
-Surfactant type classification for some sugar-based & non-ionic structures were corrected.
-$\Gamma_{\mathrm{max}}$ has been corrected for some surfactant structures.
 
+
+**Please cite our work if you wish to use any of the datasets**.
+```
+@article{hoedl2025surfpro,
+  title={SurfPro--a curated database and predictive model of experimental properties of surfactants},
+  author={H{\"o}dl, Stefan L and Hermans, Luc and Dankloff, Pim FJ and Piruska, Aigars and Huck, Wilhelm TS and Robinson, William E},
+  journal={Digital Discovery},
+  volume={4},
+  number={5},
+  pages={1176--1187},
+  year={2025},
+  publisher={Royal Society of Chemistry}
+}
+```
 
 <img src="figs/SurfPro_TOC_figure.png" alt="Table of Contents Figure" width="100%">
 
