@@ -111,16 +111,13 @@ class SurfProDB(Dataset):
         workdir=".",
         featurize="graph",
         n_folds=10,
-        scaled=None,  # only scales in multi-property tasks
+        scaled=True,
     ):
         self.task = task
         self.workdir = workdir
         self.featurize = featurize
         self.n_folds = n_folds
-        if scaled:
-            self.scaled = scaled
-        else:
-            self.scaled = True if task in ["all", "multi"] else False
+        self.scaled = scaled
 
         train = pd.read_csv(f"{workdir}/data/surfpro_train.csv")
         test = pd.read_csv(f"{workdir}/data/surfpro_test.csv")
@@ -133,7 +130,7 @@ class SurfProDB(Dataset):
         self.train_df = deepcopy(self.make_task(train))
         self.test_df = deepcopy(self.make_task(test))
 
-        if self.scaled and len(self.propnames) > 1:
+        if self.scaled:
             print("Scaling ENABLED for multi-property prediction task")
             print("Don't forget to `surfpro.unscale(test_preds)`")
             self.make_scaler(self.train_df)
