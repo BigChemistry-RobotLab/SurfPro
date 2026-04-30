@@ -1,5 +1,5 @@
 import pandas as pd
-# import wandb
+import wandb
 import pickle
 import json
 import numpy as np
@@ -16,9 +16,9 @@ from surfpro.model import AttentiveFPModel
 from torch_geometric.data import Data, Batch
 
 torch.set_float32_matmul_precision("high")
-# torch.use_deterministic_algorithms(True)
-# os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
-
+torch.use_deterministic_algorithms(True)
+os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+wandb.require("core")
 
 @hydra.main(version_base="1.3", config_path="../conf", config_name="config")
 def train(cfg: DictConfig) -> None:
@@ -67,6 +67,8 @@ def train(cfg: DictConfig) -> None:
             check_on_train_epoch_end=False,
         )
 
+        lr_find = LearningRateFinder()
+
         trainer = pl.Trainer(
             max_epochs=cfg.model.n_epochs,
             accelerator="gpu" if torch.cuda.is_available() else "cpu",
@@ -74,7 +76,7 @@ def train(cfg: DictConfig) -> None:
             logger=wandb_logger if torch.cuda.is_available() else None,
             precision=32,
             default_root_dir=f"{workdir}/models/",
-            callbacks=[early_stop],
+            callbacks=[lr_find, early_stop],
         )
         print(OmegaConf.to_yaml(cfg))
 
